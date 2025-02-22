@@ -5,6 +5,7 @@ import {use} from "react";
 import {ColumnDef, flexRender, getCoreRowModel, getPaginationRowModel, useReactTable} from "@tanstack/react-table";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {DataTablePagination} from "@/components/ui/table-pagination";
+import {Skeleton} from "@/components/ui/skeleton";
 
 const columns: ColumnDef<Section>[] = [
     {
@@ -129,4 +130,10 @@ export function CoursesTable({sectionsPromise}: {sectionsPromise: Promise<Sectio
             <DataTablePagination table={table}/>
         </div>
     );
+}
+
+export function FallbackTable() {
+    return <div className="space-y-2">
+        <Skeleton className="w-full h-screen"/>
+    </div>
 }
