@@ -18,7 +18,15 @@ import {Input} from "@/components/ui/input";
 const columns: ColumnDef<Section>[] = [
     {
         accessorKey: "section",
-        header: "Section"
+        header: "Section",
+        cell: ({row, }) => {
+            const section: string = row.getValue("section");
+            const section_url = row.original.section_url;
+            if (!section_url) {
+                return section;
+            }
+            return <a href={section_url}>{section}</a>;
+        }
     },
     {
         accessorKey: "class_number",
@@ -54,7 +62,15 @@ const columns: ColumnDef<Section>[] = [
     },
     {
         accessorKey: "instructor",
-        header: "Instructor"
+        header: "Instructor",
+        cell: ({row, }) => {
+            const instructor: string = row.getValue("instructor");
+            const instructor_email = row.original.instructor_email;
+            if (!instructor_email) {
+                return instructor;
+            }
+            return <a href={"mailto:" + instructor_email}>{instructor}</a>;
+        }
     },
     {
         accessorKey: "location",
