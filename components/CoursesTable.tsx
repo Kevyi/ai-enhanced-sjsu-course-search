@@ -2,10 +2,18 @@
 
 import {Section} from "@/lib/sjsu/section";
 import {use} from "react";
-import {ColumnDef, flexRender, getCoreRowModel, getPaginationRowModel, useReactTable} from "@tanstack/react-table";
+import {
+    ColumnDef,
+    flexRender,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getPaginationRowModel,
+    useReactTable
+} from "@tanstack/react-table";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {DataTablePagination} from "@/components/ui/table-pagination";
 import {Skeleton} from "@/components/ui/skeleton";
+import {Input} from "@/components/ui/input";
 
 const columns: ColumnDef<Section>[] = [
     {
@@ -73,6 +81,8 @@ export function CoursesTable({sectionsPromise}: {sectionsPromise: Promise<Sectio
         columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        globalFilterFn: "includesString",
         initialState: {
             pagination: {
                 pageSize: 100
@@ -82,6 +92,9 @@ export function CoursesTable({sectionsPromise}: {sectionsPromise: Promise<Sectio
 
     return (
         <div className="space-y-2">
+            <Input placeholder="Search..." onChange={e => {
+                table.setGlobalFilter(e.target.value)
+            }}/>
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>
