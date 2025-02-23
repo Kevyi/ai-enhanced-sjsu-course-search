@@ -11,6 +11,10 @@ export default function TestPage(){
   {/*https://tailwindcss.com/ */}
   {/*NOTE: Remove the borders for most of the outside divs. */}  
 
+    // Colors used: slate-900, slate-500, blue-500, yellow-500, cyan-600 through 700
+    
+    //FOLLOW: https://dribbble.com/shots/24820686-Finpay-Fintech-Landing-Page
+
    return <>
       <Navbar></Navbar>
   
@@ -18,7 +22,7 @@ export default function TestPage(){
       <div className="pl-10 pt-2 pr-10 gap-24 pb-24 text-gray-950 md:pb-40 dark:text-white bg-slate-900">
 
         {/*Big front page title.*/} 
-            <div className = "rounded-lg mt-20 p-5 text-4xl tracking-tighter text-balance max-lg:font-medium max-sm:px-4 sm:text-5xl lg:text-6xl xl:text-8xl .....border border-blue-500/50">
+            <div className = "rounded-lg mt-20 p-10 text-4xl tracking-tighter text-balance max-lg:font-medium max-sm:px-4 sm:text-5xl lg:text-6xl xl:text-8xl border-t border-l-blue-500/50">
                 
                 <h1 className = "text-white ml-10 pl-20 ">
 
@@ -34,17 +38,23 @@ export default function TestPage(){
                     <hr className = "border-1 border-blue-500/50"></hr>
                 </h1>
                 
-                <h1 className = "bg-blue-900 pb-2 mt-4 tracking-tight decoration-1 underline underline-offset-2 ml-20 text-white whitespace-nowrap border-r-4 border-r-white pr-5 text-4xl">
-                    Discover.
+                <h1 className = "rounded-md p-2 pb-2 mt-4 ml-[6.5%] tracking-tight decoration-1 underline underline-offset-2 text-slate-500 whitespace-nowrap border-r-4 border-r-white pr-5 text-4xl">
+                    <span className = "text-cyan-600">Discover </span> 
+                    your desired classes 
+                    <span className = "text-cyan-600"> NOW</span>.
                 </h1>
             </div>
             
             {/* Contains typewriter and the "for sjsu students" text */}
-            <div className = "pt-4 border-l-2 border-t-2 border-blue flex flex-row mt-10">
+            <div className = "pt-4 pb-2 border-l-2 border-t border-blue flex flex-row">
+                
+                <button className ="place-self-center p-4 pl-8 pr-8 min-w-1 ml-[10%] items-center justify-center bg-slate-600 rounded-full">
+                    <span className = "text-xl text-yellow-500">Get started</span>
+                    {/* Include image here of arrow */}
+                </button>   
 
-                <div className = "place-self-center p-5 min-w-1 ml-[15%] items-center justify-center text-3xl border-2 rounded-2xl">
-                    
-                    
+                <div className = "place-self-center p-5 min-w-1 ml-[5%] items-center justify-center text-3xl border-2 rounded-2xl">
+
                     <p className = "text-white"> Search: <span> </span>  
                         <TypeAnimation
                             sequence={[
@@ -65,7 +75,6 @@ export default function TestPage(){
                     </p>
                     
                 </div>
-                
 
                 {/*Little text.*/} 
                 <div className = "text-white place-self-end flex h-16 ml-auto mr-20 max-w-xs items-center px-2 font-serif text-2xl text-blue/10 max-sm:px-4 sm:h-24 border-r-2 border-blue-500/50">
@@ -80,15 +89,18 @@ export default function TestPage(){
 
             </div>
 
-            {/* Eyecatching HomeScreen image */}
-
-            <div className = "p-5 mt-10">
+            {/* Eyecatching HomeScreen image 
+            
+                -Use resizeable component to show a BEFORE and AFTER image of the websites.
+            
+            */}
+            <div className = "mt-[1%] mb-[3%] pt-[7%] pb-[5%] border-t">
                 <Image src={tempHomeImage} className = "m-auto "alt="Temp" />;
             </div>
             
 
             {/* Section 1: Better than the scheduler. */}
-            <div className = "bg-slate-900 border-4 rounded-lg mt-10">
+            <div className = "bg-slate-900 border-4 rounded-lg">
 
                 {/*Better than Original SJSU scheduler.*/} 
                 <div className = "mt-20 pl-20 border-l-2 border-blue-500/50">
@@ -107,7 +119,7 @@ export default function TestPage(){
 
                     {/*Show before of why original SJSU thing sucks.*/} 
                     <div className = "text-xl mt-0 max-w-xl pt-1 ....border border-blue-500 rounded-lg">
-                        <p className = "text-white">
+                        <p className = "pl-5 p-2 border-l text-white">
                             This is so good because of random stuff and etc.
                             This is so good because of random stuff and etc.
                             This is so good because of random stuff and etc.

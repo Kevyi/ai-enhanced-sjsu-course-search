@@ -4,13 +4,14 @@ import Image from 'next/image';
 import tempImage from "@/app/sjsu image.png"
 
 export default function Navbar(){
-const buttonStyling = "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-accent hover:text-accent-foreground h-8 w-8 px-0";
+const buttonStyling = "bg-green-500 text-white inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-accent hover:text-accent-foreground h-8 w-8 px-0";
 
    return <>
       {/*Navbar wrapper.*/}
-      <div className = "container-wrapper bg-blue-400 border-b-4 border-b-blue-500/50 font-[Open_Sans]">
+      <div className = "container-wrapper bg-slate-900 border-b border-b-blue-500/50 font-[Open_Sans]">
           {/*Component wrapper in navbar.*/}
-          <div className = "p-5 container flex h-14 items-center m-auto">
+          {/* Removed container TailwindCSS. */}
+          <div className = "p-5 flex h-14 items-center ">
 
               {/*This is where the Logo and webpage name goes.*/}
               <div className = "mr-4 hidden md:flex">
@@ -44,15 +45,15 @@ const buttonStyling = "inline-flex items-center justify-center gap-2 whitespace-
                 </nav>
               </div>
 
+              {/* Right side button, links to somewhere */}
               <div className = "flex flex-1 items-center justify-between gap-2 md:justify-end">
                 <nav className = "flex items-center gap-0.5">
                     <a target = "blank" className = {buttonStyling}
                         href = "https://google.com">
-                        Github or something, or register or login.
+                        
                     </a>
                 </nav>
               </div>
-
           </div>
       </div>
    
