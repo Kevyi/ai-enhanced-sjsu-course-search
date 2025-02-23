@@ -42,8 +42,3 @@ next-env.d.ts
 
 .idea
 
-
-#additional
-pnpm-lock.yaml
-package.json
-pnpm-lock.yaml
