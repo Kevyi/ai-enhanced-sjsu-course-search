@@ -121,22 +121,7 @@ export interface TeacherSearchResults {
       didFallback: boolean,
       edges: {
         cursor: string,
-        node: {
-          avgDifficulty: number,
-          avgRating: number,
-          department: string,
-          firstName: string,
-          id: string,
-          isSaved: boolean,
-          lastName: string,
-          legacyId: number,
-          numRatings: number,
-          school: {
-              id: string,
-              name: string
-          },
-          wouldTakeAgainPercent: number
-        }
+        node: TeacherSearchResult
       }[],
       filters: {
         field: string,
@@ -152,6 +137,23 @@ export interface TeacherSearchResults {
       resultCount: number
     }
   }
+}
+
+export interface TeacherSearchResult {
+  avgDifficulty: number,
+  avgRating: number,
+  department: string,
+  firstName: string,
+  id: string,
+  isSaved: boolean,
+  lastName: string,
+  legacyId: number,
+  numRatings: number,
+  school: {
+      id: string,
+      name: string
+  },
+  wouldTakeAgainPercent: number
 }
 
 export const getTeacherRatingsQuery = gql`
