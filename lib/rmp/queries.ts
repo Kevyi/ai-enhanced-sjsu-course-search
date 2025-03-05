@@ -124,10 +124,6 @@ export interface TeacherSearchResults {
         node: {
           avgDifficulty: number,
           avgRating: number,
-          coursesCode: {
-              courseCount: number,
-              courseName: string
-          }[],
           department: string,
           firstName: string,
           id: string,
