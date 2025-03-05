@@ -1,7 +1,9 @@
-import { getTeacherInfo } from "@/lib/rmp";
+import { getTeacherRatings, searchTeacher } from "@/lib/rmp";
 
-export default async function name({params: {professor}}: {params: {professor: string}}) {
-    const teacherInfo = await getTeacherInfo(professor);
+export default async function name({params}: {params: Promise<{professor: string}>}) {
+    const {professor} = await params;
+    const teacherId = (await searchTeacher(decodeURIComponent(professor))).search.teachers.edges[0].node.id;
+    const teacherInfo = await getTeacherRatings(teacherId);
     return <div className="p-2 space-y-2">
         <h1 className="text-lg font-bold">{teacherInfo.node.firstName} {teacherInfo.node.lastName}</h1>
         <h2 className="text-md font-semibold">{teacherInfo.node.avgRating}/5</h2>

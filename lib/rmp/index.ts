@@ -1,5 +1,5 @@
 import { GraphQLClient } from "graphql-request";
-import { getTeacherRatings, searchTeacher, Teacher, TeacherRating } from "./queries";
+import { getTeacherRatingsQuery, searchTeacherQuery, TeacherRatings, TeacherSearchResults } from "./queries";
 
 const ENDPOINT = "https://www.ratemyprofessors.com/graphql";
 const AUTH_HEADER = "Basic dGVzdDp0ZXN0"
@@ -12,8 +12,18 @@ const client = new GraphQLClient(ENDPOINT, {
     fetch
 });
 
-export async function getTeacherInfo(name: string) {
-    const searchResults: Teacher = await client.request(searchTeacher, {query: {text: name, schoolID: SCHOOL_ID}, count: 1, includeCompare: false});
-    const teacherRating: TeacherRating = await client.request(getTeacherRatings, {id: searchResults.newSearch.teachers.edges[0].node.id})
-    return teacherRating;
+export async function searchTeacher(name: string): Promise<TeacherSearchResults> {
+    return await client.request(searchTeacherQuery, {
+        includeSchoolFilter: true,
+        query: {
+            fallback: true,
+            schoolID: SCHOOL_ID,
+            text: name
+        },
+        schoolID: SCHOOL_ID
+    });
+}
+
+export async function getTeacherRatings(id: string): Promise<TeacherRatings> {
+    return await client.request(getTeacherRatingsQuery, {id});
 }

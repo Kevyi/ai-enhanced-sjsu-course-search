@@ -1,120 +1,164 @@
 import { gql } from "graphql-request";
 
-export const searchTeacher = gql`
-query NewSearchTeachersQuery(
+export const searchTeacherQuery = gql`
+query TeacherSearchResultsPageQuery(
   $query: TeacherSearchQuery!
-  $count: Int
-  $includeCompare: Boolean!
+  $schoolID: ID
+  $includeSchoolFilter: Boolean!
 ) {
-  newSearch {
-    teachers(query: $query, first: $count) {
-      didFallback
-      edges {
-        cursor
-        node {
-          id
-          legacyId
-          firstName
-          lastName
-          department
-          departmentId
-          school {
-            legacyId
-            name
-            id
-          }
-          ...CompareProfessorsColumn_teacher @include(if: $includeCompare)
-        }
+  search: newSearch {
+    ...TeacherSearchPagination_search_1ZLmLD
+  }
+  school: node(id: $schoolID) @include(if: $includeSchoolFilter) {
+    __typename
+    ... on School {
+      name
+      ...StickyHeaderContent_school
+    }
+    id
+  }
+}
+
+fragment CardFeedback_teacher on Teacher {
+  wouldTakeAgainPercent
+  avgDifficulty
+}
+
+fragment CardName_teacher on Teacher {
+  firstName
+  lastName
+}
+
+fragment CardSchool_teacher on Teacher {
+  department
+  school {
+    name
+    id
+  }
+}
+
+fragment CompareSchoolLink_school on School {
+  legacyId
+}
+
+fragment HeaderDescription_school on School {
+  name
+  city
+  state
+  legacyId
+  ...RateSchoolLink_school
+  ...CompareSchoolLink_school
+}
+
+fragment HeaderRateButton_school on School {
+  ...RateSchoolLink_school
+  ...CompareSchoolLink_school
+}
+
+fragment RateSchoolLink_school on School {
+  legacyId
+}
+
+fragment StickyHeaderContent_school on School {
+  name
+  ...HeaderDescription_school
+  ...HeaderRateButton_school
+}
+
+fragment TeacherBookmark_teacher on Teacher {
+  id
+  isSaved
+}
+
+fragment TeacherCard_teacher on Teacher {
+  id
+  legacyId
+  avgRating
+  numRatings
+  ...CardFeedback_teacher
+  ...CardSchool_teacher
+  ...CardName_teacher
+  ...TeacherBookmark_teacher
+}
+
+fragment TeacherSearchPagination_search_1ZLmLD on newSearch {
+  teachers(query: $query, first: 8, after: "") {
+    didFallback
+    edges {
+      cursor
+      node {
+        ...TeacherCard_teacher
+        id
+        __typename
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    resultCount
+    filters {
+      field
+      options {
+        value
+        id
       }
     }
   }
 }
-
-fragment CompareProfessorsColumn_teacher on Teacher {
-  id
-  legacyId
-  firstName
-  lastName
-  school {
-    legacyId
-    name
-    id
-  }
-  department
-  departmentId
-  avgRating
-  avgDifficulty
-  numRatings
-  wouldTakeAgainPercentRounded
-  mandatoryAttendance {
-    yes
-    no
-    neither
-    total
-  }
-  takenForCredit {
-    yes
-    no
-    neither
-    total
-  }
-  ...NoRatingsArea_teacher
-  ...RatingDistributionWrapper_teacher
-}
-
-fragment NoRatingsArea_teacher on Teacher {
-  lastName
-  ...RateTeacherLink_teacher
-}
-
-fragment RatingDistributionWrapper_teacher on Teacher {
-  ...NoRatingsArea_teacher
-  ratingsDistribution {
-    total
-    ...RatingDistributionChart_ratingsDistribution
-  }
-}
-
-fragment RatingDistributionChart_ratingsDistribution on ratingsDistribution {
-  r1
-  r2
-  r3
-  r4
-  r5
-}
-
-fragment RateTeacherLink_teacher on Teacher {
-  legacyId
-  numRatings
-  lockStatus
-}
 `;
 
-export interface Teacher {
-    newSearch: {
-        teachers: {
-            didFallback: boolean,
-            edges: {
-                cursor: string,
-                node: {
-                    department: string,
-                    departmentId: string,
-                    firstName: string,
-                    id: string,
-                    lastName: string,
-                    legacyId: number,
-                    school: {
-                        id: string,
-                        legacyId: number,
-                        name: string
-                    }
-                }
-            }[]
+export interface TeacherSearchResults {
+  school: {
+    city: string,
+    id: string,
+    legacyId: number,
+    name: string,
+    state: string
+  },
+  search: {
+    teachers: {
+      didFallback: boolean,
+      edges: {
+        cursor: string,
+        node: {
+          avgDifficulty: number,
+          avgRating: number,
+          coursesCode: {
+              courseCount: number,
+              courseName: string
+          }[],
+          department: string,
+          firstName: string,
+          id: string,
+          isSaved: boolean,
+          lastName: string,
+          legacyId: number,
+          numRatings: number,
+          school: {
+              id: string,
+              name: string
+          },
+          wouldTakeAgainPercent: number
         }
+      }[],
+      filters: {
+        field: string,
+        options: {
+          id: string,
+          value: string
+        }[]
+      }[],
+      pageInfo: {
+        endCursor: string,
+        hasNextPage: boolean
+      },
+      resultCount: number
     }
+  }
 }
 
-export const getTeacherRatings = gql`
+export const getTeacherRatingsQuery = gql`
 query TeacherRatingsPageQuery(
   $id: ID!
 ) {
@@ -537,7 +581,7 @@ fragment TeacherTitles_teacher on Teacher {
 }
 `
 
-export interface TeacherRating {
+export interface TeacherRatings {
     node: {
         avgDifficulty: number,
         avgRating: number,
@@ -577,7 +621,7 @@ export interface TeacherRating {
                     ratingTags: string,
                     teacherNote: string | null,
                     textbookUse: number,
-                    thummbs: unknown[], // TODO: Figure out what this is?
+                    thumbs: unknown[], // TODO: Figure out what this is?
                     thumbsDownTotal: number,
                     thumbsUpTotal: number,
                     wouldTakeAgain: number
