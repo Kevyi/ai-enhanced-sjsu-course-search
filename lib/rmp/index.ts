@@ -12,13 +12,19 @@ const client = new GraphQLClient(ENDPOINT, {
     fetch
 });
 
+function normalizeName(name: string) {
+    return name.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "")
+}
+
 export async function searchTeacher(fullName: string): Promise<TeacherSearchResult | null> {
+    fullName = normalizeName(decodeURIComponent(fullName));
+
     const searchResults: TeacherSearchResults = await client.request(searchTeacherQuery, {
         includeSchoolFilter: true,
         query: {
             fallback: true,
             schoolID: SCHOOL_ID,
-            text: decodeURIComponent(fullName)
+            text: fullName
         },
         schoolID: SCHOOL_ID
     });
@@ -28,9 +34,9 @@ export async function searchTeacher(fullName: string): Promise<TeacherSearchResu
 
     const nameSegments = fullName.split(" ");
     const firstProfessor = edges[0].node;
-    if (!firstProfessor.firstName.startsWith(nameSegments[0]))
+    if (!normalizeName(firstProfessor.firstName).startsWith(nameSegments[0]))
         return null;
-    if (nameSegments.length > 1 && !firstProfessor.lastName.endsWith(nameSegments[nameSegments.length - 1]))
+    if (nameSegments.length > 1 && !normalizeName(firstProfessor.lastName).endsWith(nameSegments[nameSegments.length - 1]))
         return null;
     return firstProfessor;
 }
