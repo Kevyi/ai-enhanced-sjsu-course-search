@@ -1,7 +1,7 @@
 "use server";
 
 import { JSDOM } from "jsdom";
-import {Section} from "@/lib/sjsu/section";
+import {Section} from "@/lib/sjsu/types";
 
 const SCHEDULE_URL =
     "https://www.sjsu.edu/classes/schedules/{season}-{year}.php";

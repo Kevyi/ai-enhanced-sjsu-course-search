@@ -1,6 +1,6 @@
 import { writeFileSync } from "fs";
 import { searchTeacher } from "../lib/rmp";
-import { getSections } from "../lib/sjsu/scraper";
+import { getSections } from "../lib/sjsu";
 
 (async() => {
     const sections = await getSections("spring", 2025);

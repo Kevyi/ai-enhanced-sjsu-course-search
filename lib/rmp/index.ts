@@ -1,3 +1,5 @@
+"use server";
+
 import { GraphQLClient } from "graphql-request";
 import { getTeacherRatingsQuery, searchTeacherQuery, TeacherRatings, TeacherSearchResult, TeacherSearchResults } from "./queries";
 

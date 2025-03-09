@@ -1,4 +1,4 @@
-import { getSections } from "@/lib/sjsu/scraper";
+import { getSections } from "@/lib/sjsu";
 import { writeFile } from "fs/promises";
 
 (async() => {
