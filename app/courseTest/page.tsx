@@ -1,6 +1,7 @@
 "use client";
-import CourseModule from "@/components/CourseModule";
-import Example from "@/components/TiltCard";
+import CourseCard from "@/components/CourseCard";
+import CourseTiltCard from "@/components/CourseTiltCard";
+import CourseModal from "@/components/CourseModal";
 
 export default function TestPage(){
 
@@ -8,8 +9,9 @@ export default function TestPage(){
 
 
     return <>
-        <Example></Example>
-        <CourseModule></CourseModule>
+        <CourseTiltCard></CourseTiltCard>
+        <CourseCard></CourseCard>
+        
     
     
     
