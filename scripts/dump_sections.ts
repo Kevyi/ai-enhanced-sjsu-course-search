@@ -2,6 +2,13 @@ import { getSections } from "@/lib/sjsu/scraper";
 import { writeFile } from "fs/promises";
 
 (async() => {
-    const sections = await getSections("spring", 2025);
-    await writeFile("sections.json", JSON.stringify(sections, undefined, "\t"), "utf-8");
+    const season = process.argv[2] ?? "spring";
+    if (season !== "spring" && season !== "summer" && season !== "fall" && season !== "winter") {
+        console.error("Unknown season: " + season);
+        return;
+    }
+    const year = process.argv[3] ? parseInt(process.argv[3]) : (new Date()).getFullYear();
+
+    const sections = await getSections(season, year);
+    await writeFile(`sections-${season}-${year}.json`, JSON.stringify(sections, undefined, "\t"), "utf-8");
 })();
