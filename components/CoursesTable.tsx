@@ -1,6 +1,6 @@
 "use client";
 
-import {Section} from "@/lib/sjsu/section";
+import {Section} from "@/lib/sjsu/types";
 import {use} from "react";
 import {
     ColumnDef,
