@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useRef } from "react";
 import {
   motion,
@@ -19,20 +21,24 @@ import { FaStar } from "react-icons/fa";
 import CourseCard from "@/components/CourseCard";
 import CourseModal from "@/components/CourseModal";
 import { useState } from "react";
+import { Section } from "@/lib/sjsu/section";
+import { RMPInfo, RMPProfessorInfo } from "@/lib/rmp/type";
 
-const TempDisplay = () => {
+const TempDisplay = ({section, rmpInfo} : {section: Section, rmpInfo: RMPProfessorInfo | null}) => {
   return (
       <div className = "flex justify-center">
-        <TiltCard />
+        <TiltCard section = {section} />
+        {rmpInfo?.rmp?.avgDifficulty}
       </div>
     
   );
 };
 
-const ROTATION_RANGE = 32.5;
-const HALF_ROTATION_RANGE = 32.5 / 2;
+const ROTATION_RANGE = 10.5;
+const HALF_ROTATION_RANGE = 10.5 / 2;
 
-const TiltCard = () => {
+const TiltCard = ({section}: {section: Section}) => {
+  
   const ref = useRef<HTMLDivElement | null>(null);
 
   const x = useMotionValue(0);
@@ -94,10 +100,12 @@ const TiltCard = () => {
         <Card className = "bg-slate-800 transition delay-450 hover:bg-slate-700 hover:cursor-pointer">
             <CardHeader>
                 {/* Title should be cut off after some time if too long. */}
-                <CardTitle className = "font-extrabold text-blue-400 text-xl">Title of Class</CardTitle>
+                <CardTitle className = "font-extrabold text-blue-400 text-xl">{section.course_title}</CardTitle>
                 <CardDescription> 
                     {/* Map out one star for each score */}
-                    <h1 className="text-white m-1">Teacher</h1>
+                    <h1 className="text-white m-1">
+                        {section.instructor}
+                    </h1>
                     <div className = "text-yellow-500">
                         <div className = "flex m-1">
                             <FaStar /> <FaStar />
