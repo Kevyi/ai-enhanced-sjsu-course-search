@@ -1,4 +1,4 @@
-import {getSections} from "@/lib/sjsu/scraper";
+import {getSections} from "@/lib/sjsu";
 import {Suspense} from "react";
 import {CoursesTable, FallbackTable} from "@/components/CoursesTable";
 
