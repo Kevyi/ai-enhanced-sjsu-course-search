@@ -86,8 +86,8 @@ import { AnyBulkWriteOperation, MongoClient } from "mongodb";
     const client = new MongoClient(process.env.MONGODB_URI!);
     await client.connect();
 
-    const db = client.db("rmp");
-    const collection = db.collection("professors");
+    const db = client.db("cmpe151");
+    const collection = db.collection("rmp_professors");
 
     const updateOperations: AnyBulkWriteOperation[] = Object.entries(data).map(
       ([professorEmail, professor]) => {

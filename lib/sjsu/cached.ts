@@ -14,9 +14,14 @@ const getSectionsPart = unstable_cache(
   ) => {
     await client.connect();
 
-    const db = client.db("course_sections");
-    const collection = db.collection(season + "-" + year);
-    const cursor = (await collection.find({}, { projection: { _id: 0 } }))
+    const db = client.db("cmpe151");
+    const collection = db.collection("course_sections");
+    const cursor = (
+      await collection.find(
+        { season, year },
+        { projection: { _id: 0, season: 0, year: 0 } }
+      )
+    )
       .skip(part * PART_LENGTH)
       .limit(PART_LENGTH);
 
@@ -33,10 +38,10 @@ const getSectionsSize = unstable_cache(
   ): Promise<number> => {
     await client.connect();
 
-    const db = client.db("course_sections");
-    const collection = db.collection(season + "-" + year);
+    const db = client.db("cmpe151");
+    const collection = db.collection("course_sections");
 
-    return await collection.countDocuments();
+    return await collection.countDocuments({ season, year });
   },
   [],
   { revalidate: 1800 }

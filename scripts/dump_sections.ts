@@ -34,18 +34,20 @@ import { hideBin } from "yargs/helpers";
     const client = new MongoClient(process.env.MONGODB_URI!);
     await client.connect();
 
-    const db = client.db("course_sections");
-    const collection = db.collection(season + "-" + year);
+    const db = client.db("cmpe151");
+    const collection = db.collection("course_sections");
 
     const updateOperations: AnyBulkWriteOperation[] = sections.map(
       (section) => {
         return {
           updateOne: {
             filter: {
-              section: section.section,
+              class_number: section.class_number,
+              season,
+              year
             },
             update: {
-              $set: section,
+              $set: {...section, season, year},
             },
             upsert: true,
           },
