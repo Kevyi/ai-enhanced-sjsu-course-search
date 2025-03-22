@@ -5,6 +5,7 @@ import { getSections } from "../lib/sjsu";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { AnyBulkWriteOperation, MongoClient } from "mongodb";
+import { SectionWithRMP } from "@/lib/sjsu/types";
 
 (async () => {
   const { season, year, mode } = await yargs(hideBin(process.argv))
@@ -35,13 +36,7 @@ import { AnyBulkWriteOperation, MongoClient } from "mongodb";
   const data: {
     [email: string]: {
       name: string;
-      rmp: {
-        avgDifficulty: number;
-        avgRating: number;
-        id: string;
-        numRatings: number;
-        wouldTakeAgainPercent: number;
-      } | null;
+      rmp: SectionWithRMP["rmp"]
     };
   } = {};
 

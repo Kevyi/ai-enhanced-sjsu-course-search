@@ -2,7 +2,7 @@
 
 import { unstable_cache } from "next/cache";
 import client from "../mongodb";
-import { Section } from "./types";
+import { SectionWithRMP } from "./types";
 
 const PART_LENGTH = 2000;
 
@@ -16,16 +16,34 @@ const getSectionsPart = unstable_cache(
 
     const db = client.db("cmpe151");
     const collection = db.collection("course_sections");
-    const cursor = (
-      await collection.find(
-        { season, year },
-        { projection: { _id: 0, season: 0, year: 0 } }
-      )
-    )
-      .skip(part * PART_LENGTH)
-      .limit(PART_LENGTH);
-
-    return (await cursor.toArray()) as unknown as Section[];
+    const cursor = await collection.aggregate([
+      { $match: { season, year } },
+      { $skip: part * PART_LENGTH },
+      { $limit: PART_LENGTH },
+      {
+        $project: {
+          _id: 0,
+          season: 0,
+          year: 0,
+        },
+      },
+      {
+        $lookup: {
+          from: "rmp_professors",
+          localField: "instructor_email",
+          foreignField: "email",
+          as: "rmp",
+        },
+      },
+      {
+        $set: {
+          rmp: {
+            $arrayElemAt: ["$rmp.rmp", 0],
+          },
+        },
+      },
+    ]);
+    return (await cursor.toArray()) as unknown as SectionWithRMP[];
   },
   [],
   { revalidate: 1800 }
