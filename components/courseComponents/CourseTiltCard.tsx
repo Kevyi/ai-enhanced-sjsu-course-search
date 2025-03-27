@@ -18,17 +18,15 @@ import {
 } from "@/components/ui/card"
 
 import { FaStar } from "react-icons/fa";
-import CourseCard from "@/components/CourseCard";
-import CourseModal from "@/components/CourseModal";
+import CourseModal from "@/components/courseComponents/CourseModal";
 import { useState } from "react";
-import { Section } from "@/lib/sjsu/section";
-import { RMPInfo, RMPProfessorInfo } from "@/lib/rmp/type";
+import { SectionWithRMP } from "@/lib/sjsu/types";
 
-const TempDisplay = ({section, rmpInfo} : {section: Section, rmpInfo: RMPProfessorInfo | null}) => {
+
+const TiltCardDisplay = ({section} : {section: SectionWithRMP}) => {
   return (
-      <div className = "flex justify-center">
+      <div className = "flex justify-center m-0">
         <TiltCard section = {section} />
-        {rmpInfo?.rmp?.avgDifficulty}
       </div>
     
   );
@@ -37,7 +35,7 @@ const TempDisplay = ({section, rmpInfo} : {section: Section, rmpInfo: RMPProfess
 const ROTATION_RANGE = 10.5;
 const HALF_ROTATION_RANGE = 10.5 / 2;
 
-const TiltCard = ({section}: {section: Section}) => {
+const TiltCard = ({section}: {section: SectionWithRMP}) => {
   
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -73,7 +71,7 @@ const TiltCard = ({section}: {section: Section}) => {
   };
 
 
-  const available: boolean = true;
+ 
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -86,7 +84,7 @@ const TiltCard = ({section}: {section: Section}) => {
         transformStyle: "preserve-3d",
         transform,
       }}
-      className="relative h-96 w-72 rounded-xl bg-slate-900"
+      className="relative h-96 w-72 rounded-xl bg-gray-800 m-1"
     >
       <div
         onClick={() => setIsOpen(true)}
@@ -94,29 +92,37 @@ const TiltCard = ({section}: {section: Section}) => {
           transform: "translateZ(75px)",
           transformStyle: "preserve-3d",
         }}
-        className="absolute inset-3 grid rounded-xl bg-slate-900 shadow-lg"
+        className="absolute inset-3 grid rounded-xl bg-gray-800 shadow-lg"
       >
         {/*w-xs doesn't work, must have [px] for some reason/*/}
-        <Card className = "bg-slate-800 transition delay-450 hover:bg-slate-700 hover:cursor-pointer">
-            <CardHeader>
+        <Card className = "bg-gray-zinc transition delay-450 hover:bg-slate-600 hover:cursor-pointer">
+            <CardHeader className = "pb-2">
                 {/* Title should be cut off after some time if too long. */}
                 <CardTitle className = "font-extrabold text-blue-400 text-xl">{section.course_title}</CardTitle>
                 <CardDescription> 
                     {/* Map out one star for each score */}
-                    <h1 className="text-white m-1">
+                    <h1 className="text-white m-1 font-bold">
                         {section.instructor}
                     </h1>
                     <div className = "text-yellow-500">
                         <div className = "flex m-1">
-                            <FaStar /> <FaStar />
+                          <StarAmount sectionNumber = {section.class_number} rating = {section.rmp?.avgRating}/>
                         </div>
-                        <span className = "m-1">RMP Score</span>
+                        {/* If undefined, display none instead. */}
+
+                          <span className = "m-1 font-bold">RMP Score: {section.rmp?.avgRating} </span>
                     </div>
+                    
+                    
                 </CardDescription>
             </CardHeader>
 
-            <CardContent>
-                <p className = "text-gray-400">This class is whatever, I don't recommend to take this class....</p>
+            <CardContent className = "pb-2">
+                <p className = "text-gray-400 overflow-y-auto max-h-16 ">
+                  This class is whatever, I don't recommend to take this class....
+                  This class is whatever, I don't recommend to take this class....
+                  This class is whatever, I don't recommend to take this class....
+                </p>
             </CardContent>
 
             <CardContent>
@@ -125,7 +131,7 @@ const TiltCard = ({section}: {section: Section}) => {
 
             <CardFooter>
                {/* Tag will be illustrated depending if class is available or not. */}
-               {available ? 
+               {parseInt(section.open_seats) != 0 ? 
                <div className = "w-lg pl-2 pr-2 border rounded-lg bg-green-600">
                     AVAILABLE
                 </div>
@@ -142,9 +148,24 @@ const TiltCard = ({section}: {section: Section}) => {
     </motion.div>
 
     {/* API call for data in Modal or pass information from card? */}
-    <CourseModal isOpen={isOpen} setIsOpen={setIsOpen}></CourseModal>
+    <CourseModal section = {section} isOpen={isOpen} setIsOpen={setIsOpen}></CourseModal>
+    
     </> 
   );
 };
 
-export default TempDisplay;
+function StarAmount({ sectionNumber, rating } : {sectionNumber : string, rating : number | undefined}) {
+  const componentList = [];
+  if (!rating) return <></>; // Return empty if rating is null
+  const decimal : number = (rating % 1) * 100;
+  for (let i = 0; i < Math.floor(rating); i++) {
+      componentList.push(<FaStar key = {sectionNumber + "cardStar"+ i}/>);
+  }
+  //Try to include percentage star.
+  // componentList.push();
+
+  return (<>{componentList}</>
+  );
+}
+
+export default TiltCardDisplay;

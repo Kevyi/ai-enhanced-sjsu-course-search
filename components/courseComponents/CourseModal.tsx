@@ -4,18 +4,24 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Dispatch, SetStateAction, useState } from "react";
 import { FiAlertCircle } from "react-icons/fi";
 import { FaStar } from "react-icons/fa";
+import { SectionWithRMP } from "@/lib/sjsu/types";
+import { useToast } from "@/hooks/use-toast"
+
 
 
 
 const available : boolean = true;
 
 const SpringModal = ({
+  section,
   isOpen,
   setIsOpen,
 }: {
+  section: SectionWithRMP,
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
+  const { toast } = useToast()
   return (
     // Animated modal
     <AnimatePresence>
@@ -48,32 +54,56 @@ const SpringModal = ({
             {/* Holds the entire inside of modal */}
             <div className="relative z-10">
               <div className="max-w-xs mb-2 rounded-full text-5xl text-yellow-500 flex justify-center mx-auto">
-                <FaStar />
-                <FaStar />
-                <FaStar />
-                
+
+                {/* Returns amount of stars according to rating. */}
+                <StarAmount sectionNumber = {section.class_number} rating = {section.rmp?.avgRating}/>
+
               </div>
               <h2 className="text-5xl font-bold text-center mb-2">
-                Object Oriented Programming
+                {section.course_title}- {section.section}
               </h2>
 
               <h3 className="text-3xl font-bold text-center mb-2">
                 <span className = "bg-gradient-to-br from-yellow-600 to-blue-400 bg-clip-text text-transparent">
-                  David Taylor 
+                  {section.instructor}
                 </span>
               </h3>
 
               <p className="text-center mb-6">
-                Course Description: random stuff about the courses
+                Course Description: random stuff about the courses. AI generated?
               </p>
 
-              {available ? 
+              {/* Location will also specify if online. */}
+              <h1 className = "text-2xl font-bold text-center text-amber-600">Location: {section.location}</h1>
+              <div>
+                
+                <div className = "flex justify-center gap-10 m-3 text-xl">
+                  <div className = "">
+                    <p><b>Dates: </b>{section.dates}</p>
+                    <p><b>Time: </b>{section.times}</p>
+                    <p><b>Days: </b>{section.days}</p>
+                  </div>
+
+                  <div className = "">
+                    <p><b>Credits: </b>{section.units}</p>
+                    <p><b>Satisfies: </b>{section.satisfies}</p>
+                    <p><b>Type: </b>{section.type}</p>
+                  </div>
+                </div>
+
+                
+
+              </div>
+
+              <p className = "text-center font-bold">Contact Instructor Email: {section.instructor_email}</p>
+
+              {parseInt(section.open_seats) != 0 ? 
                <div className = "hover:opacity-80 transition-opacity max-w-xs pl-2 pr-2 border rounded-lg bg-green-600 ml-auto mr-auto m-3 p-2 text-center">
-                    <span>AVAILABLE </span>
+                    <span className = "font-bold">AVAILABLE: {section.open_seats} {parseInt(section.open_seats) == 1 ? "Seat" : "Seats"}</span>
                 </div>
                :
                 <div className = "hover:opacity-80 transition-opacity max-w-xs pl-2 pr-2 border rounded-lg bg-red-800 ml-auto mr-auto m-3 p-2 text-center">
-                    <span>Full</span>
+                    <span className = "font-bold">Full</span>
                 </div> 
                 }
 
@@ -85,8 +115,14 @@ const SpringModal = ({
                 >
                   Back
                 </button>
+
+                {/*Toast doesn't work */}
                 <button
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => {
+                    toast({
+                      description: "Added to clipboard.",
+                    })
+                  }}
                   className="bg-white hover:opacity-80 transition-opacity text-blue-600 font-semibold w-full max-w-xs py-2 rounded mr-auto"
                 >
                   Copy to clipboard.
@@ -102,5 +138,22 @@ const SpringModal = ({
     </AnimatePresence>
   );
 };
+
+function StarAmount({ sectionNumber, rating } : {sectionNumber : string, rating : number | undefined}) {
+  const componentList = [];
+  if (!rating) return <></>; // Return empty if rating is null
+  const decimal : number = (rating % 1) * 100;
+  for (let i = 0; i < Math.floor(rating); i++) {
+      componentList.push(<FaStar key = {sectionNumber + "modalStar"+ i}/>);
+  }
+  //Try to include percentage star.
+  // componentList.push();
+
+  return (<>{componentList}</>
+  );
+}
+
+
+
 
 export default SpringModal;
