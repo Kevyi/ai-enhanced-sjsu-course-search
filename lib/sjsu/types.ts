@@ -1,3 +1,5 @@
+export type Season = "spring" | "summer" | "fall" | "winter";
+
 export type Section = {
   section: string;
   section_url?: string;

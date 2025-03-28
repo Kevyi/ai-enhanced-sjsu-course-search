@@ -1,7 +1,7 @@
 "use server";
 
 import {HTMLAnchorElement, HTMLTableCellElement, Window} from "happy-dom";
-import {Section} from "@/lib/sjsu/types";
+import {Season, Section} from "@/lib/sjsu/types";
 
 type TableHeadingProcessor = {name: keyof Section} | {process: (section: Partial<Section>, td: HTMLTableCellElement) => void};
 
@@ -38,7 +38,7 @@ const TABLE_HEADING_PROPS: {
     Notes: { name: "notes" },
 };
 
-export async function getSections(season: "spring" | "summer" | "fall" | "winter", year: number) {
+export async function getSections(season: Season, year: number) {
     const html = await (await fetch(SCHEDULE_URL.replaceAll("{season}", season).replaceAll("{year}", year.toString()))).text();
     const window  = new Window();
     const document = window.document;
