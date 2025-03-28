@@ -27,7 +27,7 @@ jobs:
         run: pnpm install
 
       - name: Scrape Class Sections
-        run: pnpm tsx scripts/dump_sections --mode=mongodb --season=spring --year=2025
+        run: pnpm tsx scripts/dump_sections --mode=mongodb
         env:
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
 
