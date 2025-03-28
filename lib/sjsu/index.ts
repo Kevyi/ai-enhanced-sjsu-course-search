@@ -5,6 +5,7 @@ import {Season, Section} from "@/lib/sjsu/types";
 
 type TableHeadingProcessor = {name: keyof Section} | {process: (section: Partial<Section>, td: HTMLTableCellElement) => void};
 
+const ALL_SCHEDULES_URL = "https://www.sjsu.edu/classes/schedules/index.php";
 const SCHEDULE_URL =
     "https://www.sjsu.edu/classes/schedules/{season}-{year}.php";
 
@@ -70,4 +71,29 @@ export async function getSections(season: Season, year: number) {
 
     window.close();
     return sections;
+}
+
+export async function getAvailableSemesters() {
+    const html = await (await fetch(ALL_SCHEDULES_URL)).text();
+    const window  = new Window();
+    const document = window.document;
+    document.body.innerHTML = html;
+
+    const links = document.querySelector("#sjsu-maincontent")!.querySelectorAll("ul li a");
+    const availableSemesters: [Season, number][] = [];
+
+    for (const link of links) {
+        const url = (link as HTMLAnchorElement).href;
+        const segments = url.split("/");
+
+        const lastSegment = segments[segments.length - 1];
+        if (!lastSegment.endsWith(".php")) continue;
+
+        const [season, year] = lastSegment.replace(".php", "").split("-");
+        if (season !== "spring" && season !== "summer" && season !== "fall" && season !== "winter") continue;
+
+        availableSemesters.push([season, parseInt(year)]);
+    }
+
+    return availableSemesters;
 }
