@@ -95,5 +95,6 @@ export async function getAvailableSemesters() {
         availableSemesters.push([season, parseInt(year)]);
     }
 
+    window.close();
     return availableSemesters;
 }
