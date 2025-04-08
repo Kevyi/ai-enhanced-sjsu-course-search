@@ -8,6 +8,8 @@ export default function Navbar(){
 
   const [isShrunk, setIsShrunk] = useState(false);
 
+
+  //Weird glitch where it spazzes out at certain points or scrolls.
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 50) {

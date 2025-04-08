@@ -6,6 +6,7 @@ import Image from 'next/image';
 
 import tempImage from "@/app/sjsu image.png"
 import tempHomeImage from "@/app/temp picture for home.png"
+import courseGIF from "@/public/homepage_tempGIF.gif"
 
 export default function TestPage(){
   {/*https://tailwindcss.com/ */}
@@ -94,8 +95,8 @@ export default function TestPage(){
                 -Use resizeable component to show a BEFORE and AFTER image of the websites.
             
             */}
-            <div className = "mt-[1%] mb-[3%] pt-[7%] pb-[5%] border-t">
-                <Image src={tempHomeImage} className = "m-auto "alt="Temp" />;
+            <div className = "mt-[1%] mb-[1%] pt-[3%] pb-[3%] border-t">
+                <Image src={courseGIF} className = "m-auto border border-slate-600" width={1040} height={620} alt="Temp" />;
             </div>
             
 
@@ -152,7 +153,7 @@ export default function TestPage(){
                                 </p> 
                             </div>
                         </div>
-                        <Image src={tempImage} className = "m-auto"alt="Temp" width={204} height={204} />;
+                        <Image src={tempImage} className = "m-auto "alt="Temp" width={204} height={204} />;
                     </div>
                 </div>
                 
