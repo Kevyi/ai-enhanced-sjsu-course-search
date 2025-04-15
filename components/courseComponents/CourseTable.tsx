@@ -16,17 +16,13 @@ export default function CourseTable({sections} : {sections : SectionWithRMP[]}){
     return <>
     <div className = "flex flex-row">
         {/* Outside container for filter */}
-        <div className = "bg-main1 p-10 m-10 text-center text-main min-w-lg">
+        {/* <div className = "bg-main1 p-10 m-10 text-center text-main min-w-lg">
             <FilterSideBar></FilterSideBar>
            
-        </div>
+        </div> */}
         <FilterSideBar></FilterSideBar>
 
         <div className = "border border-borderLines bg-gradient-to-b from-slate-900 to-main3 flex-col max-w-5xl min-w-xl">
-            {/*Search Bar */}
-            <div className = "bg-main2  p-8 text-center ml-auto mr-auto">
-                <Input type="email" className = "bg-red-50 max-w-xl justify-self-center" placeholder="Search" />
-            </div>
 
             <div className = "flex flex-row min-h-screen flex-wrap justify-center p-10">
                 {courses.map((item) => (
