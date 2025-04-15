@@ -31,7 +31,8 @@ const buttonStyling = "bg-green-500 text-white inline-flex items-center justify-
 
    return <>
       <div className = {`${navBarAnimation} sticky top-0 z-10 bg-slate-900 border-b border-b-blue-500/50 font-[Open_Sans]`}>
-        <div className = {`transition-all duration-1000 ease-in-out ${isShrunk ? "p-3" : "p-2"}`}>
+        <div className = {`transition-all duration-1000 ease-in-out `}>
+            {/*${isShrunk ? "p-3" : "p-2"} */}
             {/*Component wrapper in navbar.*/}
             {/* Removed container TailwindCSS. */}
             <div className = "p-5 flex h-14 items-center ">
