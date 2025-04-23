@@ -17,77 +17,86 @@ export default function TestPage(){
     //FOLLOW: https://dribbble.com/shots/24820686-Finpay-Fintech-Landing-Page
 
    return <>
-      <Navbar></Navbar>
+   
+      <header className="w-full fixed top-0 z-50">
+        <Navbar scroll={true}/>
+      </header>
   
       {/*Main screen. p-10 has padding left and right, maybe just change to have columns surround it.*/} 
       <div className="pl-10 pt-2 pr-10 gap-24 pb-24 text-gray-950 md:pb-40 dark:text-white bg-slate-900">
 
-        {/*Big front page title.*/} 
-            <div className = "rounded-lg mt-20 p-10 text-4xl tracking-tighter text-balance max-lg:font-medium max-sm:px-4 sm:text-5xl lg:text-6xl xl:text-8xl border-t border-l-blue-500/50">
-                
-                <h1 className = "text-white ml-10 pl-20 ">
+        <section className = "h-screen flex flex-col items-center justify-center relative">
+        {/*Landing DIV.*/} 
+            <div className = "rounded-lg pt-5 text-4xl tracking-tighter text-balance max-lg:font-medium max-sm:px-4 sm:text-5xl lg:text-6xl xl:text-8xl border-t border-l-blue-500/50">
+                {/* Title */}
+                <div className = "text-white ml-10 pl-20">
+                    <h1>
+                        Find 
+                        <span className = "text-yellow-500"> YOUR </span> 
+                        SJSU courses 
+                        <span className = "text-blue-500"> fast </span>
+                        and 
+                        <span className = "text-blue-500"> efficiently </span> 
+                        with 
+                        <span className = "text-yellow-500"> AI</span>.
+                        {/*OR, fastforward your SJSU schedule with AI.*/} 
+                        <hr className = "border-1 border-blue-500/50"></hr>
+                    </h1>
+                    {/* Subtitle */}
+                    <h3 className = "text-4xl rounded-md tracking-tight decoration-1 underline underline-offset-2 text-slate-500 whitespace-nowrap border-r-4 border-r-white">
+                        <span className = "text-cyan-600">Discover </span> 
+                        your desired classes 
+                        <span className = "text-cyan-600"> NOW</span>.
+                    </h3>    
+                </div>
+            </div>
 
-                    Find 
-                    <span className = "text-yellow-500"> YOUR </span> 
-                    SJSU courses 
-                    <span className = "text-blue-500"> fast </span>
-                    and 
-                    <span className = "text-blue-500"> efficiently </span> 
-                    with 
-                    <span className = "text-yellow-500"> AI</span>.
-                    {/*OR, fastforward your SJSU schedule with AI.*/} 
-                    <hr className = "border-1 border-blue-500/50"></hr>
-                </h1>
-                
-                <h1 className = "rounded-md p-2 pb-2 mt-4 ml-[6.5%] tracking-tight decoration-1 underline underline-offset-2 text-slate-500 whitespace-nowrap border-r-4 border-r-white pr-5 text-4xl">
-                    <span className = "text-cyan-600">Discover </span> 
-                    your desired classes 
-                    <span className = "text-cyan-600"> NOW</span>.
-                </h1>
+                        {/* Little text.  */}
+            <div className = "ml-auto max-h-fit text-white items-center px-2 font-serif text-2xl text-blue/10 max-sm:px-4 sm:h-24 border-r-2 border-blue-500/50">
+                <p>Made by 
+                    <span className = "font-bold text-yellow-500"> SJSU</span> 
+                    <span className = "font-bold text-blue-500"> students</span> 
+                    , for 
+                    <span className = "font-bold text-yellow-500"> SJSU </span> 
+                    <span className = "font-bold text-blue-500">Students.</span>
+                </p>
             </div>
             
             {/* Contains typewriter and the "for sjsu students" text */}
-            <div className = "pt-4 pb-2 border-l-2 border-t border-blue flex flex-row">
+            <div className = "min-w-[60%] border-l-2 border-t border-blue flex ml-[10%] mr-auto mb-4">
                 
-                <button className ="place-self-center p-4 pl-8 pr-8 min-w-1 ml-[10%] items-center justify-center bg-slate-600 rounded-full">
+                {/* Include image here of arrow */}
+                <button className ="place-self-center p-4 pl-8 pr-8 min-w-fit ml-[5%] items-center justify-center bg-slate-600 rounded-full">
                     <span className = "text-xl text-yellow-500">Get started</span>
-                    {/* Include image here of arrow */}
                 </button>   
-
-                <div className = "place-self-center p-5 min-w-1 ml-[5%] items-center justify-center text-3xl border-2 rounded-2xl">
-
-                    <p className = "text-white"> Search: <span> </span>  
-                        <TypeAnimation
-                            sequence={[
-                            // Same substring at the start will only be typed out once, initially
-                            'CS 151',
-                            2000, 
-                            'Object Oriented Programming',
-                            2000,
-                            'Data Structures and Algorithms.',
-                            2000,
-                            'Data Structures and Algorithms NO DAVID TAYLOR!!',
-                            2000]}
-                            wrapper="span"
-                            speed={50}
-                            className = "text-blue-500 text-center"
-                            repeat={Infinity}
-                        />
+                
+                <div className = "min-w-full p-5 flex text-white max-lg:font-medium max-sm:px-4 sm:text-1xl lg:text-2xl xl:text-3xl">
+                    <span className = "m-auto">Search:</span> 
+                    <p className = "ml-5 p-2 border-2 rounded-2xl min-w-full">
+                            <TypeAnimation
+                                sequence={[
+                                // Same substring at the start will only be typed out once, initially
+                                'CS 151',
+                                2000, 
+                                'Object Oriented Programming',
+                                2000,
+                                'Data Structures and Algorithms.',
+                                2000,
+                                'Data Structures and Algorithms NO DAVID TAYLOR!!',
+                                2000]}
+                                wrapper="span"
+                                speed={50}
+                                className = "text-blue-500 text-center"
+                                repeat={Infinity}
+                            />
                     </p>
                     
                 </div>
 
-                {/*Little text.*/} 
-                <div className = "text-white place-self-end flex h-16 ml-auto mr-20 max-w-xs items-center px-2 font-serif text-2xl text-blue/10 max-sm:px-4 sm:h-24 border-r-2 border-blue-500/50">
-                    <p>Made by 
-                        <span className = "font-bold text-yellow-500"> SJSU</span> 
-                        <span className = "font-bold text-blue-500"> students</span> 
-                        , for 
-                        <span className = "font-bold text-yellow-500"> SJSU </span> 
-                        <span className = "font-bold text-blue-500">Students.</span>
-                    </p>
-                </div>
+            </div>
 
+            <div className = "text-white border min-w-full"> 
+                
             </div>
 
             {/* Eyecatching HomeScreen image 
@@ -95,10 +104,16 @@ export default function TestPage(){
                 -Use resizeable component to show a BEFORE and AFTER image of the websites.
             
             */}
-            <div className = "mt-[1%] mb-[1%] pt-[3%] pb-[3%] border-t">
+        </section>
+
+            
+
+        
+        <div id = "nextSection" className = "p-2">
+            {/* id=nextSection indicates where navbar appears*/}
+            <div  className = "mt-[1%] mb-[1%] pt-[3%] pb-[3%] border-t">
                 <Image src={courseGIF} className = "m-auto border border-slate-600" width={1040} height={620} alt="Temp" />;
             </div>
-            
 
             {/* Section 1: Better than the scheduler. */}
             <div className = "bg-slate-900 border-4 rounded-lg">
@@ -133,8 +148,6 @@ export default function TestPage(){
 
                 {/*Better user interface.*/} 
                     <div className = "bg-slate-900 rounded-lg flex flex-row w-auto border border-blue-500/50">
-
-                        
                         <Image src={tempImage} className = "m-auto"alt="Temp" width={204} height={204} />
                         <div className = "p-10 text-2xl tracking-tighter text-balance border-r-4 border-white">
                             <h1 className = "underline underline-offset-8 text-blue-500 font-medium max-lg:font-medium max-sm:px-4 sm:text-2xl lg:text-3xl xl:text-4xl">
@@ -175,9 +188,9 @@ export default function TestPage(){
                 </div>
 
             </div>
-            
+        </div>
 
-      </div>
-
+    </div>
+                    
    </>
 }

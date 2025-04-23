@@ -4,34 +4,43 @@ import Image from 'next/image';
 import tempImage from "@/app/sjsu image.png"
 import { useEffect, useState } from "react";
 
-export default function Navbar(){
+export default function Navbar({ scroll = false }){
 
-  const [isShrunk, setIsShrunk] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
-
-  //Weird glitch where it spazzes out at certain points or scrolls.
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setIsShrunk(true);
-      } else {
-        setIsShrunk(false);
-      }
-    };
+    if (!scroll) {
+      setIsVisible(true);
+      return;
+    }
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    const target = document.getElementById("nextSection");
+    if (!target) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [scroll]);
+
+  const visibilityAnimation = `transition-transform duration-500 ease-in-out ${
+    isVisible ? "translate-y-0" : "-translate-y-full"
+  }`;
 
 
 
 
-const navBarAnimation = `transition-all duration-300 ease-in-out ${isShrunk ? "py-2" : "py-6"}`;
+//const navBarAnimation = `transition-all duration-300 ease-in-out ${isShrunk ? "py-2" : "py-6"}`;
 const buttonStyling = "bg-green-500 text-white inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-accent hover:text-accent-foreground h-8 w-8 px-0";
 
    return <>
-      <div className = {`${navBarAnimation} sticky top-0 z-10 bg-slate-900 border-b border-b-blue-500/50 font-[Open_Sans]`}>
-        <div className = {`transition-all duration-1000 ease-in-out `}>
+      <div className = {`py-4 sticky top-0 z-50 bg-slate-900 font-mono border-b border-b-blue-500/50 ${visibilityAnimation}`}>
+        <div className = "transition-all duration-700 ease-in-out">
             {/*${isShrunk ? "p-3" : "p-2"} */}
             {/*Component wrapper in navbar.*/}
             {/* Removed container TailwindCSS. */}
@@ -83,7 +92,6 @@ const buttonStyling = "bg-green-500 text-white inline-flex items-center justify-
       </div>    
       {/*Navbar wrapper.*/}
       
-   
 
    </>
 }
