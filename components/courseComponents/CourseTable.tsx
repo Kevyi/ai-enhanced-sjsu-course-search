@@ -4,7 +4,7 @@ import { SectionWithRMP } from "@/lib/sjsu/types";
 import CourseTiltCard from "./CourseTiltCard"
 import { Input } from "@/components/ui/input"
 import FilterSideBar from "@/components/courseComponents/FilterSideBar"
-
+import TopicFilterForm from "@/components/courseComponents/filterComponent"
 
 
 export default function CourseTable({sections} : {sections : SectionWithRMP[]}){
@@ -14,12 +14,13 @@ export default function CourseTable({sections} : {sections : SectionWithRMP[]}){
     const [courses, setCourses] = useState(sections);
 
     return <>
-    <div className = "flex flex-row">
+    <div className = "flex flex-col justify-center items-center">
         {/* Outside container for filter */}
         {/* <div className = "bg-main1 p-10 m-10 text-center text-main min-w-lg">
             <FilterSideBar></FilterSideBar>
            
         </div> */}
+        <TopicFilterForm></TopicFilterForm>
         <FilterSideBar></FilterSideBar>
 
         <div className = "border border-borderLines bg-gradient-to-b from-slate-900 to-main3 flex-col max-w-5xl min-w-xl">

@@ -26,7 +26,7 @@ const classTypes: Option[] = [
   { label: "Online", value: "online" },
 ];
 
-export default function MultiSelectFilter() {
+function MultiSelectFilter() {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
 
@@ -83,14 +83,14 @@ export default function MultiSelectFilter() {
                     </Command>
                 </PopoverContent>
             </Popover>
-            <CourseFilterForm></CourseFilterForm>
+            
         </div>
         
     </>
   );
 }
 
-function CourseFilterForm() {
+export default function CourseFilterForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Add logic to filter courses here
@@ -98,6 +98,7 @@ function CourseFilterForm() {
 
   return (
     <>
+    <MultiSelectFilter></MultiSelectFilter>
     
     <Card className="max-w-sm mx-auto shadow-md pt-4 pb-0 rounded-2xl">
       <CardContent> 
