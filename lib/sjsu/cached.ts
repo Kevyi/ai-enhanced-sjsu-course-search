@@ -3,6 +3,7 @@
 import { unstable_cache } from "next/cache";
 import client from "../mongodb";
 import { Season, SectionWithRMP } from "./types";
+import { getAvailableSemesters } from ".";
 
 const PART_LENGTH = 2000;
 
@@ -79,3 +80,11 @@ export async function getCachedSections(
   );
   return parts.flat();
 }
+
+export const getCachedAvailableSemesters = unstable_cache(
+  async () => {
+    return await getAvailableSemesters();
+  },
+  [],
+  { revalidate: 1800 }
+)
