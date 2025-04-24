@@ -1,14 +1,17 @@
 "use client";
 import Navbar from "@/components/Navbar"
 import {TypeAnimation} from "react-type-animation";
+import { useEffect, useState } from 'react';
 
 import Image from 'next/image';
-
 import tempImage from "@/app/sjsu image.png"
 import tempHomeImage from "@/app/temp picture for home.png"
 import courseGIF from "@/public/homepage_tempGIF.gif"
 
 export default function TestPage(){
+    const [show1, setShow1] = useState(false);
+    const [show2, setShow2] = useState(false);
+    const [show3, setShow3] = useState(false);
   {/*https://tailwindcss.com/ */}
   {/*NOTE: Remove the borders for most of the outside divs. */}  
 
@@ -16,58 +19,76 @@ export default function TestPage(){
     
     //FOLLOW: https://dribbble.com/shots/24820686-Finpay-Fintech-Landing-Page
 
+
+    useEffect(() => {
+        // Trigger animation after mount
+        const timer1 = setTimeout(() => setShow1(true), 100); // slight delay to allow transition
+        const timer2 = setTimeout(() => setShow2(true), 150); // longer delay to allow transition
+        const timer3 = setTimeout(() => setShow3(true), 175 ); // longer delay to allow transition
+
+        return () => {clearTimeout(timer1); clearTimeout(timer2); clearTimeout(timer3)};
+    }, []);
+
+    const transitionCSS1 = `${show1 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`;
+    const transitionCSS2 = `${show2 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`;
+    const transitionCSS3 = `${show3 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`;
+    const violetTextGradient = `bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent`;
+    const blueTextGradient = `bg-gradient-to-r from-purple-800 via-violet-500 to-blue-600 bg-clip-text text-transparent`;
+    const goldTextGradient = `bg-gradient-to-r from-amber-600 via-yellow-500 to-orange-400 bg-clip-text text-transparent`;
+
    return <>
    
       <header className="w-full fixed top-0 z-50">
         <Navbar scroll={true}/>
       </header>
-  
+      
       {/*Main screen. p-10 has padding left and right, maybe just change to have columns surround it.*/} 
       <div className="pl-10 pt-2 pr-10 gap-24 pb-24 text-gray-950 md:pb-40 dark:text-white bg-slate-900">
-
+        {/*Landing DIV section.*/} 
         <section className = "h-screen flex flex-col items-center justify-center relative">
-        {/*Landing DIV.*/} 
+       
             <div className = "rounded-lg pt-5 text-4xl tracking-tighter text-balance max-lg:font-medium max-sm:px-4 sm:text-5xl lg:text-6xl xl:text-8xl border-t border-l-blue-500/50">
-                {/* Title */}
-                <div className = "text-white ml-10 pl-20">
-                    <h1>
+                {/* Title and subtitle*/}
+                <div className = {``}>
+                    {/* Title */}
+                    <h1 className = {`text-white transition-all duration-3500 ease-out ${transitionCSS1}`} >
                         Find 
-                        <span className = "text-yellow-500"> YOUR </span> 
+                        <span className = {`${goldTextGradient}`}> YOUR </span> 
                         SJSU courses 
-                        <span className = "text-blue-500"> fast </span>
+                        <span className = {`${blueTextGradient}`}> fast </span>
                         and 
-                        <span className = "text-blue-500"> efficiently </span> 
+                        <span className = {`${goldTextGradient}`}> efficiently </span> 
                         with 
-                        <span className = "text-yellow-500"> AI</span>.
+                        <span className = {`${goldTextGradient}`}> AI</span>.
                         {/*OR, fastforward your SJSU schedule with AI.*/} 
                         <hr className = "border-1 border-blue-500/50"></hr>
                     </h1>
                     {/* Subtitle */}
-                    <h3 className = "text-4xl rounded-md tracking-tight decoration-1 underline underline-offset-2 text-slate-500 whitespace-nowrap border-r-4 border-r-white">
+                    <h3 className = {`text-4xl rounded-md tracking-tight decoration-1 underline underline-offset-2 text-slate-500 whitespace-nowrap border-r-4 border-r-white transition-all duration-3500 ease-out ${transitionCSS2}`}>
                         <span className = "text-cyan-600">Discover </span> 
                         your desired classes 
-                        <span className = "text-cyan-600"> NOW</span>.
+                        <span className = {`${violetTextGradient}`}> NOW</span>.
                     </h3>    
                 </div>
             </div>
 
                         {/* Little text.  */}
-            <div className = "ml-auto max-h-fit text-white items-center px-2 font-serif text-2xl text-blue/10 max-sm:px-4 sm:h-24 border-r-2 border-blue-500/50">
+            <div className = {`ml-auto max-h-fit text-white items-center px-2 font-serif text-2xl text-blue/10 max-sm:px-4 sm:h-24 border-r-2 border-blue-500/50 transition-all duration-2500 ease-out ${transitionCSS3}`}>
                 <p>Made by 
-                    <span className = "font-bold text-yellow-500"> SJSU</span> 
+                    <span className = {`${goldTextGradient} font-bold`}> SJSU</span> 
                     <span className = "font-bold text-blue-500"> students</span> 
                     , for 
-                    <span className = "font-bold text-yellow-500"> SJSU </span> 
+                    <span className = {`${goldTextGradient} font-bold`}> SJSU </span> 
                     <span className = "font-bold text-blue-500">Students.</span>
                 </p>
             </div>
             
             {/* Contains typewriter and the "for sjsu students" text */}
-            <div className = "min-w-[60%] border-l-2 border-t border-blue flex ml-[10%] mr-auto mb-4">
+            <div className = {`min-w-[60%] border-l-2 border-t border-blue flex ml-[10%] mr-auto mb-4 transition-all duration-2500 ease-out ${transitionCSS3}`}>
                 
                 {/* Include image here of arrow */}
-                <button className ="place-self-center p-4 pl-8 pr-8 min-w-fit ml-[5%] items-center justify-center bg-slate-600 rounded-full">
-                    <span className = "text-xl text-yellow-500">Get started</span>
+                <button className ="place-self-center p-4 pl-8 pr-8 min-w-fit ml-[5%] items-center justify-center bg-slate-600 rounded-full transition duration-500 ease-in-out hover:bg-sky-900">
+                    <span className = "text-xl text-yellow-500 font-bold">Get started</span>
                 </button>   
                 
                 <div className = "min-w-full p-5 flex text-white max-lg:font-medium max-sm:px-4 sm:text-1xl lg:text-2xl xl:text-3xl">
@@ -82,7 +103,7 @@ export default function TestPage(){
                                 2000,
                                 'Data Structures and Algorithms.',
                                 2000,
-                                'Data Structures and Algorithms NO DAVID TAYLOR!!',
+                                'Data Structures and Algorithms',
                                 2000]}
                                 wrapper="span"
                                 speed={50}
