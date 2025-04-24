@@ -2,6 +2,7 @@ import React from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
+import FilterButton from "@/components/ui/filterButton"
 
 const TopicFilterForm = () => {
   const topTags = [
@@ -32,7 +33,7 @@ const TopicFilterForm = () => {
       </div>
 
       {/* Categories */}
-      <div className="flex flex-wrap gap-2">
+      {/* <div className="flex flex-wrap gap-2">
         <Button variant="secondary" className="rounded-full">All Topics</Button>
         {categories.map(cat => (
           <Button
@@ -43,7 +44,7 @@ const TopicFilterForm = () => {
             {cat}
           </Button>
         ))}
-      </div>
+      </div> */}
 
       {/* Filters and Actions */}
       <div className="flex flex-wrap items-center gap-2">
@@ -68,28 +69,6 @@ const TopicFilterForm = () => {
           </SelectContent>
         </Select>
 
-        <Select>
-          <SelectTrigger className="w-[120px]">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="done">Done</SelectItem>
-            <SelectItem value="todo">To Do</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select>
-          <SelectTrigger className="w-[120px]">
-            <SelectValue placeholder="Tags" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="dp">DP</SelectItem>
-            <SelectItem value="graph">Graph</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Input placeholder="Search questions" className="w-60" />
-
         <Button variant="ghost" size="icon">
           <span className="material-icons">settings</span>
         </Button>
@@ -98,6 +77,14 @@ const TopicFilterForm = () => {
           Pick One
         </Button>
       </div>
+
+      {/* Creates a border between form sections */}
+      <hr className="my-6 border-t border-gray-300" />
+
+    {/*Lower half of query */}
+      <Input placeholder="Search Courses" className="w-60 border rounded-lg" />
+    
+        <FilterButton></FilterButton>
     </form>
   )
 }
