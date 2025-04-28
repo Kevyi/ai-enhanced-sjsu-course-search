@@ -28,3 +28,5 @@ export type SectionWithRMP = Section & {
     wouldTakeAgainPercent: number;
   } | null;
 };
+
+export type SchoolDays = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday";
