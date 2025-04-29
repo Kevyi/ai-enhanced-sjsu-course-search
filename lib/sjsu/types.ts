@@ -1,3 +1,5 @@
+export type Season = "spring" | "summer" | "fall" | "winter";
+
 export type Section = {
   section: string;
   section_url?: string;
@@ -26,3 +28,5 @@ export type SectionWithRMP = Section & {
     wouldTakeAgainPercent: number;
   } | null;
 };
+
+export type SchoolDays = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday";

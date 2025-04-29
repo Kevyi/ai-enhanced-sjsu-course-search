@@ -2,13 +2,14 @@
 
 import { unstable_cache } from "next/cache";
 import client from "../mongodb";
-import { SectionWithRMP } from "./types";
+import { Season, SectionWithRMP } from "./types";
+import { getAvailableSemesters } from ".";
 
 const PART_LENGTH = 2000;
 
 const getSectionsPart = unstable_cache(
   async (
-    season: "spring" | "summer" | "fall" | "winter",
+    season: Season,
     year: number,
     part: number
   ) => {
@@ -51,7 +52,7 @@ const getSectionsPart = unstable_cache(
 
 const getSectionsSize = unstable_cache(
   async (
-    season: "spring" | "summer" | "fall" | "winter",
+    season: Season,
     year: number
   ): Promise<number> => {
     await client.connect();
@@ -66,7 +67,7 @@ const getSectionsSize = unstable_cache(
 );
 
 export async function getCachedSections(
-  season: "spring" | "summer" | "fall" | "winter",
+  season: Season,
   year: number
 ) {
   const size = await getSectionsSize(season, year);
@@ -79,3 +80,11 @@ export async function getCachedSections(
   );
   return parts.flat();
 }
+
+export const getCachedAvailableSemesters = unstable_cache(
+  async () => {
+    return await getAvailableSemesters();
+  },
+  [],
+  { revalidate: 1800 }
+)
