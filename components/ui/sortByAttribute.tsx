@@ -56,7 +56,7 @@ import {
           </PopoverTrigger>
 
           {/*Popover that appears when user clicks on button. Shows the sorting options.*/}
-          <PopoverContent className="w-60 bg-[#2a2a2a] text-white border border-gray-700 p-2" side="bottom" align="start">
+          <PopoverContent className="w-40 bg-[#2a2a2a] text-white border border-gray-700 p-2" side="bottom" align="start">
             <div className="flex flex-col space-y-1">
             {options.map((option) => (
                 <button

@@ -41,10 +41,10 @@ export default function MultiSelectFilter({courseTypeSelected, setCourseTypeSele
                     </Button>
                 </PopoverTrigger>
 
-                <PopoverContent className=" w-[200px] p-0 border-none">
+                <PopoverContent className=" w-[150px] p-0 border-none rounded-lg">
 
-                    <Command>
-                        <CommandGroup className = "bg-[#2a2a2a] font-semibold text-white">
+                    <Command className = "bg-[#2a2a2a]">
+                        <CommandGroup className = "font-semibold text-white">
 
                             {classTypes.map(option => (
                                 <CommandItem
@@ -62,8 +62,8 @@ export default function MultiSelectFilter({courseTypeSelected, setCourseTypeSele
                             {/* Reset button */}
                             <CommandItem className = "">
                                 {/* Should be the reset button for all tags. Make selected state = remove every element and close popup.*/}
-                                <Button onClick = {() => {setOpen(false); setCourseTypeSelected([]);}} variant="ghost" className = "h-4 flex m-1 mb-0 ml-auto bg-transparent border-none ">
-                                    Reset <ListRestart/>
+                                <Button onClick = {() => {setOpen(false); setCourseTypeSelected([]);}} variant="ghost" className = "h-4 w-0 flex m-1 mb-0 ml-auto mr-2 bg-transparent border-none text-xs">
+                                  <ListRestart/> Reset 
                                 </Button>
                             </CommandItem>
 
