@@ -99,7 +99,7 @@ export async function getAvailableSemesters() {
     return availableSemesters;
 }
 
-export function parseSectionDayTimes(section: Section) {
+export async function parseSectionDayTimes(section: Section) {
     const dayTimes: Partial<Record<SchoolDays, ({from: number, to: number})[]>> = {};
 
     const timeChunks = section.times.split(" ").filter(t => t !== "");

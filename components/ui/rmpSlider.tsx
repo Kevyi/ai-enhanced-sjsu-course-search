@@ -10,7 +10,7 @@ function RmpSlider() {
   };
 
   return (
-    <div className = "flex flex-col">
+    <div className = "flex-col justify-center content-center ml-2 mr-2 accent-pink-400">
       <input
         type="range"
         min="0"
@@ -18,10 +18,15 @@ function RmpSlider() {
         value={score}
         onChange={handleSliderChange}
       />
-      <div className="flex gap-1 text-yellow-500 text-xl">
+      <div className="flex justify-between text-lg m-0 p-0 ">
         {[...Array(score)].map((_, i) => (
+          <FaStar className = "text-yellow-500" key={`${i}rmpScoreStar`} />
+        ))}
+
+        {[...Array(5- score)].map((_, i) => (
           <FaStar key={`${i}rmpScoreStar`} />
         ))}
+
       </div>
     </div>
   );
