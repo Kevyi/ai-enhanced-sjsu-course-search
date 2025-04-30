@@ -95,7 +95,7 @@ const TiltCard = ({section}: {section: SectionWithRMP}) => {
         className="absolute inset-3 grid rounded-xl bg-gray-800 shadow-lg"
       >
         {/*w-xs doesn't work, must have [px] for some reason/*/}
-        <Card className = "bg-gray-zinc transition delay-450 hover:bg-slate-600 hover:cursor-pointer">
+        <Card className = "bg-gray-zinc transition delay-450 hover:bg-slate-600 hover:cursor-pointer max-w-[265]">
             <CardHeader className = "pb-2">
                 {/* Title should be cut off after some time if too long. */}
                 <CardTitle className = "font-extrabold text-blue-400 text-xl">
