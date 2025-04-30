@@ -155,7 +155,7 @@ export default function CourseFilterForm() {
 
           <div className = "col-start-1">
             <Label htmlFor="rmpScore">Rate my Professor:</Label>
-            <RmpSlider></RmpSlider>
+            {/* <RmpSlider></RmpSlider> */}
           </div>
 
           <div className="md:col-span-2 flex justify-end">

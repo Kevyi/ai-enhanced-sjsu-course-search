@@ -1,17 +1,22 @@
 import React from "react"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { Search } from 'lucide-react';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge"
+import { SectionWithRMP } from "@/lib/sjsu/types";
 
 import SortByAttributeButton from "@/components/ui/sortByAttribute"
 import RmpSlider from "@/components/ui/rmpSlider";
 import ClassFilter from "@/components/ui/classTypeFilter"
 import SelectTimeComponent from "@/components/ui/selectTimeComponent"
+import Combobox from "@/components/ui/comboBox"
 
-export default function TopicFilterForm () {
+
+//Query base off useState values, have a limit(timelimit) so it doesn't check after every character change.
+
+//allCourses references a varuabke that holds all the courses. setCourses is a setter of useState for courses in the CourseTable, change to query.
+export default function TopicFilterForm ({allCourses, setCourses} : {allCourses: SectionWithRMP[], setCourses : React.Dispatch<React.SetStateAction<SectionWithRMP[]>>}) {
 
   //The course search bar value.
   const [inputCourses, setInputCourses] = useState("");
@@ -21,15 +26,68 @@ export default function TopicFilterForm () {
     //Automatically on Open.
   const [availableCourses, setAvailableCourses] = useState(true);
 
-  //Sets string for what the courses should be sortby.
-  const [sortBy, setSortBy] = useState("");
+  //Sets string for what the courses should be sortby. If "Custom," don't sort.
+  const [sortBy, setSortBy] = useState("Custom");
+
   //Can help sort descending/ascending order.
   //const [sortAscending, setSortAscending] = useState(true);
+
+  //For RMP score
+  const [RMPscore, setRMPScore] = useState(5);
+
+  //For the scheduling data in an array of objects.
+  {/*
+    [
+        { day: "Mon", times: [9, 10] },
+        { day: "Wed", times: [14, 15] }
+    ]  
+  */}
+  //The number is the hours from 0-24, so 10 am = 10 and 2 pm = 14.
+  const [selectedTimes, setSelectedTimes] = useState<{ day: string; times: number[] }[]>([]);
+
 
   //Array of user chosen types of course they want to query for.
   const [courseTypeSelected, setCourseTypeSelected] = useState<string[]>([]);
 
+  //Hold array of all the teachers.
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
 
+  //Intialize all the teachers inside the teacher array will all the courses given.
+  useEffect(() => {
+    const teacherSet = new Set<string>();
+    const uniqueTeachers: Teacher[] = [];
+
+    for (const course of allCourses) {
+      if (course.instructor && !teacherSet.has(course.instructor)) {
+        teacherSet.add(course.instructor);
+        uniqueTeachers.push({
+          name: course.instructor,
+          value: course.instructor,
+        });
+      }
+    }
+
+    setTeachers(uniqueTeachers);
+  }, []); // run this effect when course data changes
+
+  //Console logs these useStates everytime one of these updates.
+  useEffect(() => {
+    console.log(RMPscore)
+    console.log(inputCourses)
+    console.log(sortBy)
+    console.log(selectedTimes)
+    console.log(courseTypeSelected)
+    console.log(availableCourses)
+    console.log(teachers)
+  }, [RMPscore, inputCourses, sortBy, selectedTimes, courseTypeSelected, availableCourses, teachers]);
+
+  //------------------------------------------------------------------------------------------------------------------------------------------------
+
+  //Teacher type
+  type Teacher = {
+    name: string;
+    value: string;
+  };
 
 
   {/*Below are for selected courseTypes, probably should change the names.*/}
@@ -37,7 +95,7 @@ export default function TopicFilterForm () {
     label: string;
     value: string;
   };
-
+  
   const classTypes: Option[] = [
     { label: "Lecture", value: "lecture" },
     { label: "Lab", value: "lab" },
@@ -46,7 +104,7 @@ export default function TopicFilterForm () {
   ];
 
 
-
+  
   //Apends or filters/remove of selected classTypes.
   const toggleOption = (value: string) => {
     setCourseTypeSelected(prev =>
@@ -54,58 +112,15 @@ export default function TopicFilterForm () {
     );
   };
 
-  const categories = ["Algorithms", "Database", "Shell", "Concurrency", "JavaScript"]
-  const topTags = [
-    { label: "Array", count: 1894 },
-    { label: "String", count: 785 },
-    { label: "Hash Table", count: 689 },
-    { label: "Dynamic Programming", count: 580 },
-    { label: "Math", count: 575 },
-    { label: "Sorting", count: 446 },
-    { label: "Greedy", count: 410 },
-  ]
-
   return (
-    <form className="bg-slate-800 text-foreground p-4 rounded-md space-y-4">
-      {/* Top Tags */}
-      {/* <div className="flex flex-wrap gap-2 text-sm">
-        {topTags.map(({ label, count }) => (
-          <span
-            key={label}
-            className="bg-muted px-3 py-1 rounded-full cursor-pointer hover:bg-muted/70"
-          >
-            {label} <span className="text-muted-foreground">{count}</span>
-          </span>
-        ))}
-        <button className="text-muted-foreground text-sm hover:text-foreground ml-2">Expand ▾</button>
-      </div> */}
-
-      {/* Categories */}
-      {/* <div className="flex flex-wrap gap-2">
-        <Button variant="secondary" className="rounded-full">All Topics</Button>
-        {categories.map(cat => (
-          <Button
-            key={cat}
-            variant="outline"
-            className="rounded-full"
-          >
-            {cat}
-          </Button>
-        ))}
-      </div> */}
+    <form className="text-foreground p-4 pb-2 rounded-md ">
 
       {/* Filters and Actions */}
       <div className="flex flex-wrap items-center gap-2">
 
-      {/* className={`flex text-left p-1 rounded transition-colors ${
-                        selected === option
-                        ? "bg-gray-700 text-white"
-                        : "hover:bg-gray-600 text-gray-300"
-                    }`} */}
-
         {/*Availability Selector */}
         <Select onValueChange={(value) => setAvailableCourses(value === "true")}>
-          <SelectTrigger className="w-[120px] bg-[#2a2a2a] border-none font-semibold text-white focus-visible:ring-0">
+          <SelectTrigger className="w-[120px] bg-[#2a2a2a] border-none font-semibold text-white focus-visible:ring-0 pl-2 pr-2 hover:bg-[#1a1a1a]">
             <SelectValue placeholder="Availability" />
           </SelectTrigger>
           <SelectContent className = "font-semibold bg-[#2a2a2a] border-none">
@@ -115,15 +130,13 @@ export default function TopicFilterForm () {
         </Select>
         
         {/*Select time/schedule component. */}
-        <SelectTimeComponent></SelectTimeComponent>
+        <SelectTimeComponent selectedTimes = {selectedTimes} setSelectedTimes={setSelectedTimes}></SelectTimeComponent>
 
-        <Button variant="default" className="bg-green-500 hover:bg-green-600 rounded-full">
-          Pick One
-        </Button>
+        <Combobox teachers = {teachers}></Combobox>
       </div>
 
       {/* Creates a border between form sections */}
-      <hr className="my-6 border-t border-gray-300" />
+      <hr className="my-3 border-t border-gray-300" />
 
 
     {/* bg-[#2a2a2a] for slightly less black than black */}
@@ -139,7 +152,7 @@ export default function TopicFilterForm () {
               value = {inputCourses} onChange = {(e) => setInputCourses(e.target.value)}/>
         </div>
         {/* Fix resizing but when sortbyattrbiutebutton has a long tag */}
-        <div className = "min-w-40">
+        <div className = "">
           {/*Choose how to sort the classes queried (what attribute, ascending or descending.) */}
           <SortByAttributeButton selectedFilter={sortBy} setSelectedFilter={setSortBy}></SortByAttributeButton>
         </div>
@@ -148,22 +161,21 @@ export default function TopicFilterForm () {
         <ClassFilter courseTypeSelected = {courseTypeSelected} setCourseTypeSelected = {setCourseTypeSelected}></ClassFilter>
 
         {/*Choose RMP rating. */}
-        <RmpSlider></RmpSlider>
-          
-        
+        <RmpSlider RMPscore={RMPscore} setRMPScore={setRMPScore}></RmpSlider>
       </div>
 
     {/* Tag Div: will map out tags of classTypes that have been selected. Can click on tag/badge to remove them.*/}
-        <div className="m-3 w-full flex flex-wrap justify-start gap-2">
+    {/*can make div = h-4  */}
+        <div className="w-full flex flex-wrap justify-start gap-2 h-4">
           {courseTypeSelected.length > 0
               ? courseTypeSelected.map(val => 
               <button onClick = {(e)=> {toggleOption(val)}} key = {`${val}Badge`}>
-                <Badge className = "bg-green-500 hover:bg-red-600"> 
+                <Badge className = "bg-green-500 hover:bg-red-600 mt-2"> 
                   {classTypes.find(opt => opt.value === val)?.label}
                 </Badge>
               </button>
               )
-              : ""}
+              : <> </>}
         </div>
         
         

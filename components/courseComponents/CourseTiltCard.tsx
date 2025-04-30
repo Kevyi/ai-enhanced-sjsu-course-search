@@ -98,7 +98,9 @@ const TiltCard = ({section}: {section: SectionWithRMP}) => {
         <Card className = "bg-gray-zinc transition delay-450 hover:bg-slate-600 hover:cursor-pointer">
             <CardHeader className = "pb-2">
                 {/* Title should be cut off after some time if too long. */}
-                <CardTitle className = "font-extrabold text-blue-400 text-xl">{section.course_title}</CardTitle>
+                <CardTitle className = "font-extrabold text-blue-400 text-xl">
+                  <div className = "max-h-20 max-w-50 overflow-y-hidden ">{section.course_title}</div>
+                </CardTitle>
                 <CardDescription> 
                     {/* Map out one star for each score */}
                     <h1 className="text-white m-1 font-bold">
@@ -118,7 +120,7 @@ const TiltCard = ({section}: {section: SectionWithRMP}) => {
             </CardHeader>
 
             <CardContent className = "pb-2">
-                <p className = "text-gray-400 overflow-y-auto max-h-16 ">
+                <p className = "text-gray-400 overflow-y-auto max-h-16 [scrollbar-width:none]">
                   This class is whatever, I don't recommend to take this class....
                   This class is whatever, I don't recommend to take this class....
                   This class is whatever, I don't recommend to take this class....

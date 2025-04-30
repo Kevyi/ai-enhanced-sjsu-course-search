@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { FaStar } from "react-icons/fa";    
 
-function RmpSlider() {
-  const [score, setScore] = useState(5);
+function RmpSlider({RMPscore, setRMPScore} : {RMPscore : number, setRMPScore : React.Dispatch<React.SetStateAction<number>>}) {
   const [starAmount, setStars] = useState();
 
   const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setScore(parseInt(event.target.value, 10));
+    setRMPScore(parseInt(event.target.value, 10));
   };
 
   return (
@@ -15,15 +14,15 @@ function RmpSlider() {
         type="range"
         min="0"
         max="5"
-        value={score}
+        value={RMPscore}
         onChange={handleSliderChange}
       />
       <div className="flex justify-between text-lg m-0 p-0 ">
-        {[...Array(score)].map((_, i) => (
+        {[...Array(RMPscore)].map((_, i) => (
           <FaStar className = "text-yellow-500" key={`${i}rmpScoreStar`} />
         ))}
 
-        {[...Array(5- score)].map((_, i) => (
+        {[...Array(5- RMPscore)].map((_, i) => (
           <FaStar key={`${i}rmpScoreStar`} />
         ))}
 

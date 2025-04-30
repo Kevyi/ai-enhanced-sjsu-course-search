@@ -13,8 +13,12 @@ import { useState, useEffect } from "react";
 export default function CourseTablePagination({paginationIndex, setPaginationIndex, maxPagination} : {paginationIndex: number, setPaginationIndex: React.Dispatch<React.SetStateAction<number>>, maxPagination : number}){
     
     
-    const [currentIndex, setCurrentIndex] = useState(paginationIndex)
-    console.log(maxPagination)
+    const scrollToTop = () => {
+        window.scrollTo({
+          top: -10,
+          behavior: 'smooth', // smooth scroll animation
+        });
+      };
 
     return(<>
 
@@ -29,22 +33,22 @@ export default function CourseTablePagination({paginationIndex, setPaginationInd
 
             {/*All the way back.*/}
             <PaginationItem>
-                <PaginationLink className = "cursor-pointer hover:bg-slate-400" onClick={() => setPaginationIndex(1)}> {"<<"}</PaginationLink>
+                <PaginationLink className = "cursor-pointer hover:bg-slate-400" onClick={() => {setPaginationIndex(1); scrollToTop();}}> {"<<"}</PaginationLink>
             </PaginationItem>
 
             {/*Current page.*/}
             <PaginationItem>
-                <PaginationLink className = "cursor-pointer bg-slate-500 hover:bg-slate-400" onClick={() => setPaginationIndex(paginationIndex)}>{paginationIndex}</PaginationLink>
+                <PaginationLink className = "cursor-pointer bg-slate-500 hover:bg-slate-400" onClick={() => {setPaginationIndex(paginationIndex); scrollToTop()}}>{paginationIndex}</PaginationLink>
             </PaginationItem>
 
             {/*If pagination is past a certain point, don't show this option. One page forward*/}
             {paginationIndex + 1> maxPagination ? <div></div> :<PaginationItem>
-                <PaginationLink className = "cursor-pointer hover:bg-slate-400" onClick={() => setPaginationIndex(paginationIndex+1)}>{paginationIndex + 1}</PaginationLink>
+                <PaginationLink className = "cursor-pointer hover:bg-slate-400" onClick={() => {setPaginationIndex(paginationIndex+1); scrollToTop()}}>{paginationIndex + 1}</PaginationLink>
             </PaginationItem>}
             
             {/*If pagination is past a certain point, don't show this option. Two pages forward*/}
             {paginationIndex + 2 > maxPagination ? <div></div> :<PaginationItem>
-                <PaginationLink className = "cursor-pointer hover:bg-slate-400" onClick={() => setPaginationIndex(paginationIndex+2)}>{paginationIndex + 2}</PaginationLink>
+                <PaginationLink className = "cursor-pointer hover:bg-slate-400" onClick={() => {setPaginationIndex(paginationIndex+2); scrollToTop()}}>{paginationIndex + 2}</PaginationLink>
             </PaginationItem>}
             
             <PaginationItem>
@@ -53,7 +57,7 @@ export default function CourseTablePagination({paginationIndex, setPaginationInd
 
             {/*All the way forward. */}
             <PaginationItem>
-                <PaginationLink className = "cursor-pointer hover:bg-slate-400" onClick={() => setPaginationIndex(maxPagination)}> {">>"}</PaginationLink>
+                <PaginationLink className = "cursor-pointer hover:bg-slate-400" onClick={() => {setPaginationIndex(maxPagination); scrollToTop();}}> {">>"}</PaginationLink>
             </PaginationItem>
 
             {/*Foward one space*/}

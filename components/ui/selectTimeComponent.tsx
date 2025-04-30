@@ -10,15 +10,27 @@ import { Button } from "@/components/ui/button";
 const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const hours = Array.from({ length: 14 }, (_, i) => i + 7); // 6 AM to 7 PM
 
-export default function ScheduleSelector() {
 
+//Types for the array.
+type TimeSelection = {
+    day: string;
+    times: number[];
+  };
+
+type Props = {
+    selectedTimes: TimeSelection[];
+    setSelectedTimes: React.Dispatch<React.SetStateAction<TimeSelection[]>>;
+  };
+
+export default function ScheduleSelector({selectedTimes, setSelectedTimes} : Props) {
+ 
     //Time and day selected in a string: "colID-rowID".
     const [selected, setSelected] = useState<Set<string>>(new Set());
 
     const [isMouseDown, setIsMouseDown] = useState(false);
 
   //The number is the hours from 0-24, so 10 am = 10 and 2 pm = 14.
-  const [selectedTimes, setSelectedTimes] = useState<{ day: string; times: number[] }[]>([]);
+  //const [selectedTimes, setSelectedTimes] = useState<{ day: string; times: number[] }[]>([]);
 
 
   //Ensure it works outside the grid if cursor goes outside.
@@ -30,37 +42,63 @@ export default function ScheduleSelector() {
   }, []);
 
   //Console logs the collected array of available times.
-  useEffect(() => {
-    console.log(selectedTimes);
-  }, [selectedTimes]);
+//   useEffect(() => {
+//     console.log(selectedTimes);
+//   }, [selectedTimes]);
+
+
+    //Honestly have no idea if this code does anything.
+    useEffect(() => {
+        const timesMap = new Map<string, number[]>();
+    
+        selected.forEach((cellId) => {
+        const [col, row] = cellId.split("-").map(Number);
+        const day = days[col];
+        const hour = hours[row];
+        if (!timesMap.has(day)) timesMap.set(day, []);
+        timesMap.get(day)!.push(hour);
+        });
+    
+        const timeRanges = Array.from(timesMap.entries()).map(([day, times]) => ({
+        day,
+        times: times.sort((a, b) => a - b),
+        }));
+    
+        setSelectedTimes(timeRanges);
+    }, [selected]);
+  
 
   //Toggle cell color by crossreferencing it to array of cells and adds to output array.
     //Uses set's unique set identity to do the work.
-  const toggleCell = (id: string) => {
-  setSelected((prev) => {
-    const copy = new Set(prev);
-    copy.has(id) ? copy.delete(id) : copy.add(id);
-
-    // Build selectedTimes
-    const timesMap = new Map<string, number[]>();
-
-    copy.forEach((cellId) => {
-      const [col, row] = cellId.split("-").map(Number);
-      const day = days[col];
-      const hour = hours[row];
-      if (!timesMap.has(day)) timesMap.set(day, []);
-      timesMap.get(day)!.push(hour);
-    });
-
-    const timeRanges = Array.from(timesMap.entries()).map(([day, times]) => ({
-      day,
-      times: times.sort((a, b) => a - b),
-    }));
-
-    setSelectedTimes(timeRanges);
-    return copy;
-  });
-};
+    const toggleCell = (id: string) => {
+        setSelected((prev) => {
+          const copy = new Set(prev);
+          copy.has(id) ? copy.delete(id) : copy.add(id);
+          return copy;
+        });
+      
+        // Defer this calculation and side effect to after setSelected
+        setTimeout(() => {
+          const timesMap = new Map<string, number[]>();
+          const current = new Set(selected); // Use latest known value
+      
+          current.forEach((cellId) => {
+            const [col, row] = cellId.split("-").map(Number);
+            const day = days[col];
+            const hour = hours[row];
+            if (!timesMap.has(day)) timesMap.set(day, []);
+            timesMap.get(day)!.push(hour);
+          });
+      
+          const timeRanges = Array.from(timesMap.entries()).map(([day, times]) => ({
+            day,
+            times: times.sort((a, b) => a - b),
+          }));
+      
+          setSelectedTimes(timeRanges);
+        }, 0); // next tick to avoid running during render
+      };
+      
 
 const resetCells = () => {
     //Resets all the cells.
@@ -68,7 +106,7 @@ const resetCells = () => {
     //Set time map to empty.
     setSelectedTimes([]);
 
-}
+};
 
 const selectAllCells = () => {
 
@@ -109,7 +147,6 @@ const selectAllCells = () => {
     <Popover>
         <PopoverTrigger asChild>
             <Button className="bg-[#2a2a2a] border-none font-semibold text-white focus-visible:ring-0 pl-2 pr-2">Select Availability 
-                
                 <ChevronDown className="h-4 w-4 opacity-50" />
             </Button>
         </PopoverTrigger>
@@ -117,8 +154,8 @@ const selectAllCells = () => {
         <PopoverContent className="w-auto p-0 bg-slate-700 border-none">
             {/*Content to holds buttons to reset all or confirm all. */}
             <div className = "flex justify-end">
-                <Button variant = "secondary" className = "m-2" onClick ={() => {resetCells()}}>Reset</Button>
-                <Button variant = "secondary" className = "m-2" onClick ={() => {selectAllCells()}}>Add All</Button>
+                <Button variant = "secondary" className = "m-2 bg-slate-400" onClick ={() => {resetCells()}}>Reset</Button>
+                <Button variant = "secondary" className = "m-2 bg-slate-400" onClick ={() => {selectAllCells()}}>Add All</Button>
             </div>
 
             <div className="overflow-auto pr-4 pb-4">

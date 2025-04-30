@@ -6,7 +6,7 @@ import _rmpData from "../../public/rmp.json";
 import { RMPInfo } from "@/lib/rmp/type";
 
 export default async function TestPage(){
-    const sections = (await getCachedSections("spring", 2025)).slice(0, 10);
+    const sections = (await getCachedSections("spring", 2025)).slice(0, 100);
     const rmpData: RMPInfo = _rmpData as RMPInfo;
 
 

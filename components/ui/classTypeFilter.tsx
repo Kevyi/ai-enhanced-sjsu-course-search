@@ -44,7 +44,7 @@ export default function MultiSelectFilter({courseTypeSelected, setCourseTypeSele
                 <PopoverContent className=" w-[200px] p-0 border-none">
 
                     <Command>
-                        <CommandGroup className = "bg-[#2a2a2a] font-semibold text-gray-400">
+                        <CommandGroup className = "bg-[#2a2a2a] font-semibold text-white">
 
                             {classTypes.map(option => (
                                 <CommandItem
@@ -52,7 +52,7 @@ export default function MultiSelectFilter({courseTypeSelected, setCourseTypeSele
                                 onSelect={() => toggleOption(option.value)}
                                 className={`cursor-pointer${courseTypeSelected.includes(option.value) ? "bg-[#2a2a2a]" : ""}`}
                                 >
-                                    <div className="mr-2 h-4 w-4 flex items-center justify-center">
+                                    <div className="mr-2 h-4 w-4 flex items-center justify-center ">
                                         {courseTypeSelected.includes(option.value) && <Check className="h-4 w-4 text-green-600" />}
                                     </div>
                                     {option.label}

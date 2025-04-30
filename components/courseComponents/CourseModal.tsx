@@ -12,6 +12,13 @@ import { useToast } from "@/hooks/use-toast"
 
 const available : boolean = true;
 
+
+function addItemToLocalStorageArray(courseID : string) {
+  const myArray = (JSON.parse(localStorage.getItem("courses") || "[]")) as any[];
+  const localStorageFunction = myArray.includes(courseID) ? console.log("make pop up that says course already inside cart") : myArray.push(courseID);;
+  localStorage.setItem("courses", JSON.stringify(myArray));
+}
+
 const SpringModal = ({
   section,
   isOpen,
@@ -121,11 +128,13 @@ const SpringModal = ({
                   onClick={() => {
                     toast({
                       description: "Added to clipboard.",
-                    })
+                    });
+                    addItemToLocalStorageArray(section.class_number);
+                    console.log(section.class_number)
                   }}
                   className="bg-white hover:opacity-80 transition-opacity text-blue-600 font-semibold w-full max-w-xs py-2 rounded mr-auto"
                 >
-                  Copy to clipboard.
+                  Copy to clipboard. Add to shopping-cart.
                   Add a toast.
                 </button>
               </div>
