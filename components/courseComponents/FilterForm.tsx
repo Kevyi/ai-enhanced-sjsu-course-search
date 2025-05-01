@@ -11,12 +11,13 @@ import RmpSlider from "@/components/ui/rmpSlider";
 import ClassFilter from "@/components/ui/classTypeFilter"
 import SelectTimeComponent from "@/components/ui/selectTimeComponent"
 import Combobox from "@/components/ui/comboBox"
+import { parseSectionDayTimes } from "@/lib/sjsu/time";
 
 
 //Query base off useState values, have a limit(timelimit) so it doesn't check after every character change.
 
 //allCourses references a varuabke that holds all the courses. setCourses is a setter of useState for courses in the CourseTable, change to query.
-export default function TopicFilterForm ({allCourses, setCourses} : {allCourses: SectionWithRMP[], setCourses : React.Dispatch<React.SetStateAction<SectionWithRMP[]>>}) {
+export default function TopicFilterForm ({allCourses, setFilteredCourses} : {allCourses: SectionWithRMP[], setFilteredCourses : React.Dispatch<React.SetStateAction<SectionWithRMP[]>>}) {
 
   //The course search bar value.
   const [inputCourses, setInputCourses] = useState("");
@@ -74,14 +75,44 @@ export default function TopicFilterForm ({allCourses, setCourses} : {allCourses:
 
   //Console logs these useStates everytime one of these updates.
   useEffect(() => {
-    console.log(RMPscore)
-    console.log(debouncedInputCourses)
-    console.log(sortBy)
-    console.log(selectedTimes)
-    console.log(courseTypeSelected)
-    console.log(availableCourses)
-    console.log(teachers)
-  }, [RMPscore, debouncedInputCourses, sortBy, selectedTimes, courseTypeSelected, availableCourses, teachers]);
+    const courseTypeMapping: Record<string, string> = {
+      "LEC": "lecture",
+      "SEM": "seminar",
+      "LAB": "lab"
+    };
+
+    const filteredCourses = allCourses.filter(c => {
+      const search = debouncedInputCourses.trim().toLowerCase();
+      if (search !== "" && !c.section.toLowerCase().includes(search) && !c.course_title.toLowerCase().includes(search) && !c.instructor.toLowerCase().includes(search))
+        return false;
+
+      if (c.rmp && c.rmp.avgRating < RMPscore)
+        return false;
+
+      if (courseTypeSelected.length > 0 && !courseTypeSelected.includes(courseTypeMapping[c.type]))
+        return false;
+      if (courseTypeSelected.includes("online") && c.instruction_mode !== "Fully Online")
+        return false;
+
+      const parsedDayTimes = parseSectionDayTimes(c);
+      if (selectedTimes.length > 0) {
+        for (const [courseDay, courseTimes] of Object.entries(parsedDayTimes)) {
+          const selectedTimesOnDay = new Set(selectedTimes.find(s => s.day === courseDay)?.times);
+          for (const courseTime of courseTimes) {
+            const from = Math.floor(courseTime.from / 60);
+            const to = Math.floor(courseTime.to / 60);
+            for (let i = from; i <= to; i++) {
+              if (!selectedTimesOnDay.has(i))
+                return false;
+            }
+          }
+        }
+      }
+
+      return true;
+    });
+    setFilteredCourses(filteredCourses);
+  }, [allCourses, RMPscore, debouncedInputCourses, sortBy, selectedTimes, courseTypeSelected, availableCourses]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
