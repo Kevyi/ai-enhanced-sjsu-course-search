@@ -20,6 +20,8 @@ export default function TopicFilterForm ({allCourses, setCourses} : {allCourses:
 
   //The course search bar value.
   const [inputCourses, setInputCourses] = useState("");
+  //The debounced course search bar value
+  const [debouncedInputCourses, setDebouncedInputCourses] = useState("");
 
   //Boolean for whether or not user wants to search for available courses or non-available courses (no idea why they would want this).
     //Maybe query for least amount of people waitlisting for this class?
@@ -73,13 +75,20 @@ export default function TopicFilterForm ({allCourses, setCourses} : {allCourses:
   //Console logs these useStates everytime one of these updates.
   useEffect(() => {
     console.log(RMPscore)
-    console.log(inputCourses)
+    console.log(debouncedInputCourses)
     console.log(sortBy)
     console.log(selectedTimes)
     console.log(courseTypeSelected)
     console.log(availableCourses)
     console.log(teachers)
-  }, [RMPscore, inputCourses, sortBy, selectedTimes, courseTypeSelected, availableCourses, teachers]);
+  }, [RMPscore, debouncedInputCourses, sortBy, selectedTimes, courseTypeSelected, availableCourses, teachers]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setDebouncedInputCourses(inputCourses);
+    }, 500);
+    return () => clearTimeout(timeout);
+  }, [inputCourses]);
 
   //------------------------------------------------------------------------------------------------------------------------------------------------
 
