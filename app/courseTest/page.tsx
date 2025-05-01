@@ -5,7 +5,7 @@ import { getCachedAvailableSemesters, getCachedSections } from "@/lib/sjsu/cache
 import Navbar from "@/components/Navbar"
 
 export default async function TestPage(){
-    const sections = (await getCachedSections("spring", 2025)).slice(0, 100);
+    const sections = (await getCachedSections("spring", 2025));
 
 
     return <>
