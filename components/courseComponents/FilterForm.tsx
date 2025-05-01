@@ -35,7 +35,7 @@ export default function TopicFilterForm ({allCourses, setCourses} : {allCourses:
   //const [sortAscending, setSortAscending] = useState(true);
 
   //For RMP score
-  const [RMPscore, setRMPScore] = useState(5);
+  const [RMPscore, setRMPScore] = useState(0);
 
   //For the scheduling data in an array of objects.
   {/*
