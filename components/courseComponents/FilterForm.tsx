@@ -29,8 +29,8 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses} : {all
     //Automatically on Open.
   const [availableCourses, setAvailableCourses] = useState(true);
 
-  //Sets string for what the courses should be sortby. If "Custom," don't sort.
-  const [sortBy, setSortBy] = useState("Custom");
+  //Sets string for what the courses should be sortby. If "No Filter," don't sort.
+  const [sortBy, setSortBy] = useState("No Filter");
 
   //Can help sort descending/ascending order.
   //const [sortAscending, setSortAscending] = useState(true);
@@ -83,7 +83,7 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses} : {all
       "LAB": "lab"
     };
 
-    const filteredCourses = allCourses.filter(c => {
+    let filteredCourses = allCourses.filter(c => {
       const search = debouncedInputCourses.trim().toLowerCase();
       if (search !== "" && !c.section.toLowerCase().includes(search) && !c.course_title.toLowerCase().includes(search) && !c.instructor.toLowerCase().includes(search))
         return false;
@@ -114,6 +114,16 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses} : {all
 
       return true;
     });
+
+    switch (sortBy) {
+      case "Seats":
+        filteredCourses = filteredCourses.sort((a, b) => parseInt(b.open_seats) - parseInt(a.open_seats));
+        break;
+      case "Rating":
+        filteredCourses = filteredCourses.sort((a, b) => (b.rmp?.avgRating ?? 0) - (a.rmp?.avgRating ?? 0));
+        break;
+    }
+    
     setFilteredCourses(filteredCourses);
   }, [allCourses, RMPscore, debouncedInputCourses, sortBy, selectedTimes, courseTypeSelected, modeTypeSelected, availableCourses]);
 

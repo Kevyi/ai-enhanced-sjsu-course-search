@@ -15,9 +15,6 @@ import {
 
   //Prop drill or context provider? Will need two, selectFilter and ascending/descending.
   export default function SortFilterButton({selectedFilter, setSelectedFilter} : {selectedFilter : String, setSelectedFilter: React.Dispatch<React.SetStateAction<string>>}) {
-    // const [selected, setSelected] = useState("Custom");
-    // const options = ["Custom", "Rating", "Seats", "Popular"];
-
     return (
       <>
       <div className = "">
@@ -40,7 +37,7 @@ import {
 
   function FilterButton({selectedFilter, setSelectedFilter} : {selectedFilter : String, setSelectedFilter: React.Dispatch<React.SetStateAction<string>>}){
 
-      const options = ["Rating", "Seats", "Popular"];
+      const options = ["No Filter", "Rating", "Seats"];
 
       return <>
       {/* Popover Sort Button */}
