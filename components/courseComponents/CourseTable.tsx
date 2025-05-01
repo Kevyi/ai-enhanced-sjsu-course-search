@@ -19,15 +19,12 @@ export default function CourseTable({sections} : {sections : SectionWithRMP[]}){
 
     //Queried sections.
     const [courses, setCourses] = useState(sections);
-
+    //How many courses per page
+    const coursesPerPage = 6;
     //What the website will see
     const [viewCourses, setViewCourses] = useState(sections);
 
     const [paginationIndex, setPaginationIndex] = useState(1);
-    const [maxPagination, setMaxPagination] = useState(1);
-
-    //How many courses per page
-    const coursesPerPage = 6;
 
     //Set what page to be viewed depending on paginationIndex that is incremented/decremented from pagination component.
     useEffect(() =>{
@@ -38,20 +35,6 @@ export default function CourseTable({sections} : {sections : SectionWithRMP[]}){
         setViewCourses(coursesArray);
         console.log(sections)
     }, [paginationIndex])
-
-    //Will set the upperlimit or pagination depending on how many 10 course cards inside courses.
-    useEffect(() => {
-
-        //query sections here. Index 1 = first 10, index 2 = next 10 etc.
-            //Should be an index limit tho.
-        
-        //HAVE TO ROUND UP no matter what. EVEN if 0, round up to 1.
-        setMaxPagination(Math.ceil(courses.length / coursesPerPage));
-        console.log(maxPagination)
-
-      }, [courses]);
-
-
 
     return <>
     <div className = "flex flex-col justify-center items-center">
@@ -69,7 +52,7 @@ export default function CourseTable({sections} : {sections : SectionWithRMP[]}){
          
          <div>
             {/*Holds the pagination bar for the table */}
-            <TablePagination paginationIndex={paginationIndex} setPaginationIndex={setPaginationIndex} maxPagination = {maxPagination}></TablePagination>
+            <TablePagination paginationIndex={paginationIndex} setPaginationIndex={setPaginationIndex} maxPagination = {Math.ceil(courses.length / coursesPerPage)}></TablePagination>
          </div>
     </div>
 
