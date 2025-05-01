@@ -77,12 +77,6 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses} : {all
 
   //Console logs these useStates everytime one of these updates.
   useEffect(() => {
-    const courseTypeMapping: Record<string, string> = {
-      "LEC": "lecture",
-      "SEM": "seminar",
-      "LAB": "lab"
-    };
-
     let filteredCourses = allCourses.filter(c => {
       const search = debouncedInputCourses.trim().toLowerCase();
       if (search !== "" && !c.section.toLowerCase().includes(search) && !c.course_title.toLowerCase().includes(search) && !c.instructor.toLowerCase().includes(search))
@@ -91,7 +85,7 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses} : {all
       if (c.rmp && c.rmp.avgRating < RMPscore)
         return false;
 
-      if (courseTypeSelected.length > 0 && !courseTypeSelected.includes(courseTypeMapping[c.type]))
+      if (courseTypeSelected.length > 0 && !courseTypeSelected.includes(c.type))
         return false;
 
       if (modeTypeSelected.length > 0 && !modeTypeSelected.includes(c.instruction_mode))
@@ -150,9 +144,9 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses} : {all
   };
   
   const classTypes: Option[] = [
-    { label: "Lecture", value: "lecture" },
-    { label: "Lab", value: "lab" },
-    { label: "Seminar", value: "seminar" }
+    { label: "Lecture", value: "LEC" },
+    { label: "Lab", value: "LAB" },
+    { label: "Seminar", value: "SEM" }
   ];
 
   const modeTypes: Option[] = [
