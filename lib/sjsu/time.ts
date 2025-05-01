@@ -43,12 +43,12 @@ function timeStringToMinutes(str: string) {
 }
 
 const dayStringMapping: {[str: string]: SchoolDays} = {
-    "M": "Monday",
-    "T": "Tuesday",
-    "W": "Wednesday",
-    "R": "Thursday",
-    "F": "Friday",
-    "S": "Saturday"
+    "M": "Mon",
+    "T": "Tue",
+    "W": "Wed",
+    "R": "Thu",
+    "F": "Fri",
+    "S": "Sat"
 }
 
 function parseDaysString(str: string) {

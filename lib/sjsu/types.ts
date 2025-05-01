@@ -29,4 +29,4 @@ export type SectionWithRMP = Section & {
   } | null;
 };
 
-export type SchoolDays = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday";
+export type SchoolDays = "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat";
