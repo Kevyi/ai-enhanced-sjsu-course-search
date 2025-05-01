@@ -52,6 +52,8 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses} : {all
   //Array of user chosen types of course they want to query for.
   const [courseTypeSelected, setCourseTypeSelected] = useState<string[]>([]);
 
+  const [modeTypeSelected, setModeTypeSelected] = useState<string[]>([]);
+
   //Hold array of all the teachers.
   const [teachers, setTeachers] = useState<Teacher[]>([]);
 
@@ -91,7 +93,8 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses} : {all
 
       if (courseTypeSelected.length > 0 && !courseTypeSelected.includes(courseTypeMapping[c.type]))
         return false;
-      if (courseTypeSelected.includes("online") && c.instruction_mode !== "Fully Online")
+
+      if (modeTypeSelected.length > 0 && !modeTypeSelected.includes(c.instruction_mode))
         return false;
 
       const parsedDayTimes = parseSectionDayTimes(c);
@@ -112,7 +115,7 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses} : {all
       return true;
     });
     setFilteredCourses(filteredCourses);
-  }, [allCourses, RMPscore, debouncedInputCourses, sortBy, selectedTimes, courseTypeSelected, availableCourses]);
+  }, [allCourses, RMPscore, debouncedInputCourses, sortBy, selectedTimes, courseTypeSelected, modeTypeSelected, availableCourses]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -139,10 +142,14 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses} : {all
   const classTypes: Option[] = [
     { label: "Lecture", value: "lecture" },
     { label: "Lab", value: "lab" },
-    { label: "Seminar", value: "seminar" },
-    { label: "Online", value: "online" },
+    { label: "Seminar", value: "seminar" }
   ];
 
+  const modeTypes: Option[] = [
+    { label: "In Person", value: "In Person" },
+    { label: "Hybrid", value: "Hybrid" },
+    { label: "Online", value: "Fully Online" }
+  ]
 
   
   //Apends or filters/remove of selected classTypes.
@@ -199,6 +206,8 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses} : {all
         {/*Choose what courseType to see. */}
         <MultiSelectFilter options={classTypes} values = {courseTypeSelected} setValues = {setCourseTypeSelected}></MultiSelectFilter>
 
+        <MultiSelectFilter options={modeTypes} values = {modeTypeSelected} setValues = {setModeTypeSelected}></MultiSelectFilter>
+
         {/*Choose RMP rating. */}
         <RmpSlider RMPscore={RMPscore} setRMPScore={setRMPScore}></RmpSlider>
       </div>
@@ -215,6 +224,15 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses} : {all
               </button>
               )
               : <> </>}
+              {modeTypeSelected.length > 0
+                  ? modeTypeSelected.map(val => 
+                  <button onClick = {(e)=> {toggleOption(val)}} key = {`${val}Badge`}>
+                    <Badge className = "bg-blue-500 hover:bg-red-600 mt-2"> 
+                      {modeTypes.find(opt => opt.value === val)?.label}
+                    </Badge>
+                  </button>
+                  )
+                  : <> </>}
         </div>
         
         
