@@ -62,7 +62,7 @@ export default function CourseTable({sections} : {sections : SectionWithRMP[]}){
 
             <div className = "flex flex-row min-h-screen flex-wrap justify-center p-10 pt-5">
                 {viewCourses.map((item) => (
-                    <CourseTiltCard key = {item.class_number} section = {item}></CourseTiltCard>
+                    <CourseTiltCard key = {item.class_number} section = {item} inShoppingCart = {false}></CourseTiltCard>
                 ))}
             </div>  
         </div>

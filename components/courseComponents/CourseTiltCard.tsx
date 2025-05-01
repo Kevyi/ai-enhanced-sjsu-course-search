@@ -23,10 +23,10 @@ import { useState } from "react";
 import { SectionWithRMP } from "@/lib/sjsu/types";
 
 
-const TiltCardDisplay = ({section} : {section: SectionWithRMP}) => {
+const TiltCardDisplay = ({section, inShoppingCart = false} : {section: SectionWithRMP, inShoppingCart : boolean}) => {
   return (
       <div className = "flex justify-center m-0">
-        <TiltCard section = {section} />
+        <TiltCard section = {section} inShoppingCart = {inShoppingCart} />
       </div>
     
   );
@@ -35,7 +35,7 @@ const TiltCardDisplay = ({section} : {section: SectionWithRMP}) => {
 const ROTATION_RANGE = 10.5;
 const HALF_ROTATION_RANGE = 10.5 / 2;
 
-const TiltCard = ({section}: {section: SectionWithRMP}) => {
+const TiltCard = ({section, inShoppingCart}: {section: SectionWithRMP, inShoppingCart : boolean}) => {
   
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -108,7 +108,7 @@ const TiltCard = ({section}: {section: SectionWithRMP}) => {
                     </h1>
                     <div className = "text-yellow-500">
                         <div className = "flex m-1">
-                          <StarAmount sectionNumber = {section.class_number} rating = {section.rmp?.avgRating}/>
+                          <StarAmount sectionNumber = {section.class_number} rating = {section.rmp?.avgRating} inShoppingCart = {inShoppingCart}/>
                         </div>
                         {/* If undefined, display none instead. */}
 
@@ -150,18 +150,20 @@ const TiltCard = ({section}: {section: SectionWithRMP}) => {
     </motion.div>
 
     {/* API call for data in Modal or pass information from card? */}
-    <CourseModal section = {section} isOpen={isOpen} setIsOpen={setIsOpen}></CourseModal>
+    <CourseModal section = {section} isOpen={isOpen} setIsOpen={setIsOpen} inShoppingCart = {inShoppingCart}></CourseModal>
     
     </> 
   );
 };
 
-function StarAmount({ sectionNumber, rating } : {sectionNumber : string, rating : number | undefined}) {
+function StarAmount({ sectionNumber, rating, inShoppingCart } : {sectionNumber : string, rating : number | undefined, inShoppingCart : boolean}) {
   const componentList = [];
   if (!rating) return <></>; // Return empty if rating is null
   const decimal : number = (rating % 1) * 100;
   for (let i = 0; i < Math.floor(rating); i++) {
-      componentList.push(<FaStar key = {sectionNumber + "cardStar"+ i}/>);
+
+    const key = inShoppingCart ? sectionNumber + "cardStar"+ i + "SHOPPINGCARTSTAR" : sectionNumber + "cardStar"+ i;
+    componentList.push(<FaStar key = {key}/>);
   }
   //Try to include percentage star.
   // componentList.push();

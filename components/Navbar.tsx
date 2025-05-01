@@ -3,8 +3,10 @@
 import Image from 'next/image';
 import tempImage from "@/app/sjsu image.png"
 import { useEffect, useState } from "react";
+import ShoppingCartSideBar from "@/components/shoppingCartSideBar"
+import { SectionWithRMP } from "@/lib/sjsu/types";
 
-export default function Navbar({ scroll = false }){
+export default function Navbar({ scroll = false, courses } : {scroll : boolean, courses : SectionWithRMP[]}){
 
   const [isVisible, setIsVisible] = useState(false);
 
@@ -81,10 +83,7 @@ const buttonStyling = "bg-green-500 text-white inline-flex items-center justify-
                 {/* Right side button, links to somewhere */}
                 <div className = "flex flex-1 items-center justify-between gap-2 md:justify-end">
                   <nav className = "flex items-center gap-0.5">
-                      <a target = "blank" className = {buttonStyling}
-                          href = "https://google.com">
-                          
-                      </a>
+                      <ShoppingCartSideBar courses = {courses}/>
                   </nav>
                 </div>
             </div>
