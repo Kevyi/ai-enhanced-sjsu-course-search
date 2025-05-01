@@ -8,7 +8,7 @@ import { SectionWithRMP } from "@/lib/sjsu/types";
 
 import SortByAttributeButton from "@/components/ui/sortByAttribute"
 import RmpSlider from "@/components/ui/rmpSlider";
-import ClassFilter from "@/components/ui/classTypeFilter"
+import MultiSelectFilter from "@/components/ui/multi-select-filter"
 import SelectTimeComponent from "@/components/ui/selectTimeComponent"
 import Combobox from "@/components/ui/comboBox"
 import { parseSectionDayTimes } from "@/lib/sjsu/time";
@@ -197,7 +197,7 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses} : {all
         </div>
         
         {/*Choose what courseType to see. */}
-        <ClassFilter courseTypeSelected = {courseTypeSelected} setCourseTypeSelected = {setCourseTypeSelected}></ClassFilter>
+        <MultiSelectFilter options={classTypes} values = {courseTypeSelected} setValues = {setCourseTypeSelected}></MultiSelectFilter>
 
         {/*Choose RMP rating. */}
         <RmpSlider RMPscore={RMPscore} setRMPScore={setRMPScore}></RmpSlider>

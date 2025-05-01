@@ -11,20 +11,13 @@ type Option = {
   value: string;
 };
 
-  const classTypes: Option[] = [
-    { label: "Lecture", value: "lecture" },
-    { label: "Lab", value: "lab" },
-    { label: "Seminar", value: "seminar" },
-    { label: "Online", value: "online" },
-  ];
-
-export default function MultiSelectFilter({courseTypeSelected, setCourseTypeSelected} : {courseTypeSelected : Array<string>, setCourseTypeSelected : React.Dispatch<React.SetStateAction<Array<string>>>}) {
+export default function MultiSelectFilter({options, values, setValues} : {options: Option[], values : Array<string>, setValues : React.Dispatch<React.SetStateAction<Array<string>>>}) {
   const [open, setOpen] = useState(false);
 
 
   //Apends or filters/remove of selected classTypes.
   const toggleOption = (value: string) => {
-    setCourseTypeSelected(prev =>
+    setValues(prev =>
       prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]
     );
   };
@@ -46,14 +39,14 @@ export default function MultiSelectFilter({courseTypeSelected, setCourseTypeSele
                     <Command className = "bg-[#2a2a2a]">
                         <CommandGroup className = "font-semibold text-white">
 
-                            {classTypes.map(option => (
+                            {options.map(option => (
                                 <CommandItem
                                 key={option.value}
                                 onSelect={() => toggleOption(option.value)}
-                                className={`cursor-pointer${courseTypeSelected.includes(option.value) ? "bg-[#2a2a2a]" : ""}`}
+                                className={`cursor-pointer${values.includes(option.value) ? "bg-[#2a2a2a]" : ""}`}
                                 >
                                     <div className="mr-2 h-4 w-4 flex items-center justify-center ">
-                                        {courseTypeSelected.includes(option.value) && <Check className="h-4 w-4 text-green-600" />}
+                                        {values.includes(option.value) && <Check className="h-4 w-4 text-green-600" />}
                                     </div>
                                     {option.label}
                                 </CommandItem>
@@ -62,7 +55,7 @@ export default function MultiSelectFilter({courseTypeSelected, setCourseTypeSele
                             {/* Reset button */}
                             <CommandItem className = "">
                                 {/* Should be the reset button for all tags. Make selected state = remove every element and close popup.*/}
-                                <Button onClick = {() => {setOpen(false); setCourseTypeSelected([]);}} variant="ghost" className = "h-4 w-0 flex m-1 mb-0 ml-auto mr-2 bg-transparent border-none text-xs">
+                                <Button onClick = {() => {setOpen(false); setValues([]);}} variant="ghost" className = "h-4 w-0 flex m-1 mb-0 ml-auto mr-2 bg-transparent border-none text-xs">
                                   <ListRestart/> Reset 
                                 </Button>
                             </CommandItem>
