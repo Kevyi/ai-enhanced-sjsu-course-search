@@ -76,27 +76,6 @@ export default function ScheduleSelector({selectedTimes, setSelectedTimes} : Pro
           copy.has(id) ? copy.delete(id) : copy.add(id);
           return copy;
         });
-      
-        // Defer this calculation and side effect to after setSelected
-        setTimeout(() => {
-          const timesMap = new Map<string, number[]>();
-          const current = new Set(selected); // Use latest known value
-      
-          current.forEach((cellId) => {
-            const [col, row] = cellId.split("-").map(Number);
-            const day = days[col];
-            const hour = hours[row];
-            if (!timesMap.has(day)) timesMap.set(day, []);
-            timesMap.get(day)!.push(hour);
-          });
-      
-          const timeRanges = Array.from(timesMap.entries()).map(([day, times]) => ({
-            day,
-            times: times.sort((a, b) => a - b),
-          }));
-      
-          setSelectedTimes(timeRanges);
-        }, 0); // next tick to avoid running during render
       };
       
 
