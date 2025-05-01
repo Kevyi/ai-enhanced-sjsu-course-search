@@ -132,7 +132,6 @@ export default function TopicFilterForm ({allCourses, setCourses} : {allCourses:
         {/*Select time/schedule component. */}
         <SelectTimeComponent selectedTimes = {selectedTimes} setSelectedTimes={setSelectedTimes}></SelectTimeComponent>
 
-        <Combobox teachers = {teachers}></Combobox>
       </div>
 
       {/* Creates a border between form sections */}
