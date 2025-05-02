@@ -16,8 +16,8 @@ import { parseSectionDayTimes } from "@/lib/sjsu/time";
 
 //Query base off useState values, have a limit(timelimit) so it doesn't check after every character change.
 
-//allCourses references a varuabke that holds all the courses. setCourses is a setter of useState for courses in the CourseTable, change to query.
-export default function TopicFilterForm ({allCourses, setFilteredCourses} : {allCourses: SectionWithRMP[], setFilteredCourses : React.Dispatch<React.SetStateAction<SectionWithRMP[]>>}) {
+//allCourses references a variable that holds all the courses. setCourses is a setter of useState for courses in the CourseTable, change to query.
+export default function TopicFilterForm ({allCourses, setFilteredCourses, semesters} : {allCourses: SectionWithRMP[], setFilteredCourses : React.Dispatch<React.SetStateAction<SectionWithRMP[]>>, semesters : [string, number][]}) {
 
   //The course search bar value.
   const [inputCourses, setInputCourses] = useState("");
@@ -38,6 +38,15 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses} : {all
   //For RMP score
   const [RMPscore, setRMPScore] = useState(0);
 
+  //For semester. Semester will be a string concat with Season + Year (string + number) = String.
+  const [semester, setSemester] = useState("");
+    //Hold all the concatonated semesters.
+    const allSemesters: string[] = [];
+    for (const [season, count] of semesters) {
+      //will make fall2025 --> Fall 2025
+      allSemesters.push(season.charAt(0).toUpperCase() + season.slice(1) + " " + count);
+    }
+
   //For the scheduling data in an array of objects.
   {/*
     [
@@ -54,28 +63,35 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses} : {all
 
   const [modeTypeSelected, setModeTypeSelected] = useState<string[]>([]);
 
+  const [semesterSelected, setSemesterSelected] = useState<[string, number]>();
+
   //Hold array of all the teachers.
-  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  // const [teachers, setTeachers] = useState<Teacher[]>([]);
 
-  //Intialize all the teachers inside the teacher array will all the courses given.
-  useEffect(() => {
-    const teacherSet = new Set<string>();
-    const uniqueTeachers: Teacher[] = [];
+  // //Intialize all the teachers inside the teacher array will all the courses given.
+  // useEffect(() => {
+  //   const teacherSet = new Set<string>();
+  //   const uniqueTeachers: Teacher[] = [];
 
-    for (const course of allCourses) {
-      if (course.instructor && !teacherSet.has(course.instructor)) {
-        teacherSet.add(course.instructor);
-        uniqueTeachers.push({
-          name: course.instructor,
-          value: course.instructor,
-        });
-      }
-    }
+  //   for (const course of allCourses) {
+  //     if (course.instructor && !teacherSet.has(course.instructor)) {
+  //       teacherSet.add(course.instructor);
+  //       uniqueTeachers.push({
+  //         name: course.instructor,
+  //         value: course.instructor,
+  //       });
+  //     }
+  //   }
 
-    setTeachers(uniqueTeachers);
-  }, []); // run this effect when course data changes
+  //   setTeachers(uniqueTeachers);
+  // }, []); // run this effect when course data changes
 
-  //Console logs these useStates everytime one of these updates.
+  //  //Teacher type
+  //  type Teacher = {
+  //   name: string;
+  //   value: string;
+  // };
+
   useEffect(() => {
     let filteredCourses = allCourses.filter(c => {
       const search = debouncedInputCourses.trim().toLowerCase();
@@ -130,11 +146,7 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses} : {all
 
   //------------------------------------------------------------------------------------------------------------------------------------------------
 
-  //Teacher type
-  type Teacher = {
-    name: string;
-    value: string;
-  };
+
 
 
   {/*Below are for selected courseTypes, probably should change the names.*/}
@@ -190,6 +202,8 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses} : {all
         {/*Select time/schedule component. */}
         <SelectTimeComponent selectedTimes = {selectedTimes} setSelectedTimes={setSelectedTimes}></SelectTimeComponent>
 
+        <Combobox allSemesters = {allSemesters} semester = {semester} setSemester={setSemester}></Combobox>
+
       </div>
 
       {/* Creates a border between form sections */}
@@ -215,10 +229,10 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses} : {all
         </div>
         
         {/*Choose what courseType to see. */}
-        <MultiSelectFilter options={classTypes} values = {courseTypeSelected} setValues = {setCourseTypeSelected}></MultiSelectFilter>
+        <MultiSelectFilter options={classTypes} values = {courseTypeSelected} setValues = {setCourseTypeSelected} type = {"Course"}></MultiSelectFilter>
 
         {/*Choose what instruction type to see. */}
-        <MultiSelectFilter options={modeTypes} values = {modeTypeSelected} setValues = {setModeTypeSelected}></MultiSelectFilter>
+        <MultiSelectFilter options={modeTypes} values = {modeTypeSelected} setValues = {setModeTypeSelected} type = {"Instruction"}></MultiSelectFilter>
 
         {/*Choose RMP rating. */}
         <RmpSlider RMPscore={RMPscore} setRMPScore={setRMPScore}></RmpSlider>

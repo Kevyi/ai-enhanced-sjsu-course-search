@@ -11,7 +11,7 @@ type Option = {
   value: string;
 };
 
-export default function MultiSelectFilter({options, values, setValues} : {options: Option[], values : Array<string>, setValues : React.Dispatch<React.SetStateAction<Array<string>>>}) {
+export default function MultiSelectFilter({options, values, setValues, type} : {options: Option[], values : Array<string>, setValues : React.Dispatch<React.SetStateAction<Array<string>>>, type : string}) {
   const [open, setOpen] = useState(false);
 
 
@@ -29,8 +29,8 @@ export default function MultiSelectFilter({options, values, setValues} : {option
             <Popover open={open} onOpenChange={setOpen}>
 
                 <PopoverTrigger asChild>
-                    <Button variant="ghost" className="flex flex-wrap justify-start m-2 rounded-full border border-gray-700 bg-[#2a2a2a]">
-                        {"Select Instruction Type"} {open ?<ArrowUp/>:<ArrowDown /> }
+                    <Button variant="ghost" className="flex justify-start m-2 rounded-full border border-gray-700 bg-[#2a2a2a] w-fit">
+                        {type} Type {open ?<ArrowUp/>:<ArrowDown /> } 
                     </Button>
                 </PopoverTrigger>
 
@@ -53,7 +53,7 @@ export default function MultiSelectFilter({options, values, setValues} : {option
                             ))}
 
                             {/* Reset button */}
-                            <CommandItem className = "">
+                            <CommandItem className = "" onSelect = {() => {setOpen(false); setValues([]);}}>
                                 {/* Should be the reset button for all tags. Make selected state = remove every element and close popup.*/}
                                 <Button onClick = {() => {setOpen(false); setValues([]);}} variant="ghost" className = "h-4 w-0 flex m-1 mb-0 ml-auto mr-2 bg-transparent border-none text-xs">
                                   <ListRestart/> Reset 

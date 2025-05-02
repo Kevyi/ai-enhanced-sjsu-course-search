@@ -19,15 +19,16 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-//Teacher type
-type Teacher = {
-    name: string;
-    value: string;
-};
-
-export default function Combobox({teachers} : {teachers : Teacher[]}) {
+export default function Combobox({
+  allSemesters,
+  semester,
+  setSemester,
+}: {
+  allSemesters: string[];
+  semester: string;
+  setSemester: React.Dispatch<React.SetStateAction<string>>;
+}) {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -37,35 +38,35 @@ export default function Combobox({teachers} : {teachers : Teacher[]}) {
           aria-expanded={open}
           className="w-[200px] justify-between text-white bg-[#2a2a2a] hover:bg-[#1a1a1a]"
         >
-          {value
-            ? teachers.find((teacher : Teacher) => teacher.value === value)?.name
-            : "Select Teacher..."}
-          <ChevronsUpDown className="opacity-50 " />
+          {semester ? semester : "Select semester..."}
+          <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
 
       <PopoverContent className="w-[200px] p-0 border-none rounded-lg">
-        <Command className = "bg-[#2a2a2a] text-white">
-          <CommandInput placeholder="Search Teacher..." className="h-9 text-white" />
-          <CommandList className = "[scrollbar-width:none]">
-            <CommandEmpty>Search Teacher.</CommandEmpty>
-            <CommandGroup className ="">
-              {teachers.map((teacher : Teacher) => (
+        <Command className="bg-[#2a2a2a] text-white">
+          <CommandInput
+            placeholder="Search semester..."
+            className="h-9 text-white"
+          />
+          <CommandList className="[scrollbar-width:none]">
+            <CommandEmpty>No semesters found.</CommandEmpty>
+            <CommandGroup>
+              {allSemesters.map((s) => (
                 <CommandItem
-                  key={teacher.value}
-                  value={teacher.value}
-                  className = "text-white font-semibold border-none p-2 data-[selected=true]:bg-[#313131] data-[selected=true]:text-white"
+                  key={s}
+                  value={s}
+                  className="text-white font-semibold border-none p-2 data-[selected=true]:bg-[#313131] data-[selected=true]:text-white"
                   onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue)
-                    setOpen(false)
+                    setSemester(currentValue === semester ? "" : currentValue);
+                    setOpen(false);
                   }}
                 >
-                  {teacher.name}
+                  {s}
                   <Check
                     className={cn(
-                      "text-green-500",
-                      "ml-auto",
-                      value === teacher.value ? "opacity-100" : "opacity-0"
+                      "text-green-500 ml-auto",
+                      semester === s ? "opacity-100" : "opacity-0"
                     )}
                   />
                 </CommandItem>
@@ -75,5 +76,5 @@ export default function Combobox({teachers} : {teachers : Teacher[]}) {
         </Command>
       </PopoverContent>
     </Popover>
-  )
+  );
 }

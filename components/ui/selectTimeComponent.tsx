@@ -125,7 +125,7 @@ const selectAllCells = () => {
     <>
     <Popover>
         <PopoverTrigger asChild>
-            <Button className="bg-[#2a2a2a] border-none font-semibold text-white focus-visible:ring-0 pl-2 pr-2">Select Availability 
+            <Button className="bg-[#2a2a2a] border-none font-semibold text-white focus-visible:ring-0 pl-2 pr-2">Select Time Availability 
                 <ChevronDown className="h-4 w-4 opacity-50" />
             </Button>
         </PopoverTrigger>
