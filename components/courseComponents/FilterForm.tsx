@@ -156,9 +156,16 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses} : {all
   ]
 
   
-  //Apends or filters/remove of selected classTypes.
-  const toggleOption = (value: string) => {
+  //Apends or filters/remove of selected course types.
+  const toggleOptionCourseType = (value: string) => {
     setCourseTypeSelected(prev =>
+      prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]
+    );
+  };
+
+  //Apends or filters/remove of selected instruction types.
+  const toggleOptionInstructionType = (value: string) => {
+    setModeTypeSelected(prev =>
       prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]
     );
   };
@@ -210,6 +217,7 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses} : {all
         {/*Choose what courseType to see. */}
         <MultiSelectFilter options={classTypes} values = {courseTypeSelected} setValues = {setCourseTypeSelected}></MultiSelectFilter>
 
+        {/*Choose what instruction type to see. */}
         <MultiSelectFilter options={modeTypes} values = {modeTypeSelected} setValues = {setModeTypeSelected}></MultiSelectFilter>
 
         {/*Choose RMP rating. */}
@@ -221,7 +229,7 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses} : {all
         <div className="w-full flex flex-wrap justify-start gap-2 h-4">
           {courseTypeSelected.length > 0
               ? courseTypeSelected.map(val => 
-              <button onClick = {(e)=> {toggleOption(val)}} key = {`${val}Badge`}>
+              <button onClick = {(e)=> {toggleOptionCourseType(val)}} key = {`${val}Badge`}>
                 <Badge className = "bg-green-500 hover:bg-red-600 mt-2"> 
                   {classTypes.find(opt => opt.value === val)?.label}
                 </Badge>
@@ -230,7 +238,7 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses} : {all
               : <> </>}
               {modeTypeSelected.length > 0
                   ? modeTypeSelected.map(val => 
-                  <button onClick = {(e)=> {toggleOption(val)}} key = {`${val}Badge`}>
+                  <button onClick = {(e)=> {toggleOptionInstructionType(val)}} key = {`${val}Badge`}>
                     <Badge className = "bg-blue-500 hover:bg-red-600 mt-2"> 
                       {modeTypes.find(opt => opt.value === val)?.label}
                     </Badge>

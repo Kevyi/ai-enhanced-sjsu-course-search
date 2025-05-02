@@ -8,7 +8,7 @@ import { SectionWithRMP } from "@/lib/sjsu/types";
 import { useToast } from "@/hooks/use-toast"
 import { ToastAction } from "@/components/ui/toast"
 import { Button } from "@/components/ui/button"
-
+import CourseInformation from "@/components/courseComponents/CourseInformationTab";
 
 
 const available : boolean = true;
@@ -85,34 +85,10 @@ const SpringModal = ({
                 </span>
               </h3>
 
-              <p className="text-center mb-6">
-                Course Description: random stuff about the courses. AI generated?
-              </p>
-
-              {/* Location will also specify if online. */}
-              <h1 className = "text-2xl font-bold text-center text-amber-600">Location: {section.location}</h1>
-              <div>
-                
-                <div className = "flex justify-center gap-10 m-3 text-xl">
-                  <div className = "">
-                    <p><b>Dates: </b>{section.dates}</p>
-                    <p><b>Time: </b>{section.times}</p>
-                    <p><b>Days: </b>{section.days}</p>
-                  </div>
-
-                  <div className = "">
-                    <p><b>Credits: </b>{section.units}</p>
-                    <p><b>Satisfies: </b>{section.satisfies}</p>
-                    <p><b>Type: </b>{section.type}</p>
-                  </div>
-                </div>
-
-                
-
+              <div className = "self-center justify-self-center">
+                <CourseInformation section = {section}></CourseInformation>
               </div>
-
-              <p className = "text-center font-bold">Contact Instructor Email: <a className = "font-semibold">{section.instructor_email}</a></p>
-              <p className = "text-center font-bold">Course Code: <a className = "font-semibold">{section.class_number}</a></p>
+              
 
               {parseInt(section.open_seats) != 0 ? 
                <div className = "hover:opacity-80 transition-opacity max-w-xs pl-2 pr-2 border rounded-lg bg-green-600 ml-auto mr-auto m-3 p-2 text-center">
@@ -155,8 +131,7 @@ const SpringModal = ({
                   }}
                   className="bg-white hover:opacity-80 transition-opacity text-blue-600 font-semibold w-full max-w-xs py-2 rounded mr-auto"
                 >
-                  Add to shopping-cart.
-                  Add a toast.
+                  Add to shopping-cart
                 </Button>
               </div>
             </div>

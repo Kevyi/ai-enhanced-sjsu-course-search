@@ -7,8 +7,9 @@ import Image from 'next/image';
 import tempImage from "@/app/sjsu image.png"
 import tempHomeImage from "@/app/temp picture for home.png"
 import courseGIF from "@/public/homepage_tempGIF.gif"
+import { SectionWithRMP } from "@/lib/sjsu/types";
 
-export default function TestPage(){
+export default function HomePage({courses} : {courses: SectionWithRMP[]}){
     const [show1, setShow1] = useState(false);
     const [show2, setShow2] = useState(false);
     const [show3, setShow3] = useState(false);
@@ -19,6 +20,8 @@ export default function TestPage(){
     
     //FOLLOW: https://dribbble.com/shots/24820686-Finpay-Fintech-Landing-Page
 
+
+    
 
     useEffect(() => {
         // Trigger animation after mount
@@ -37,10 +40,9 @@ export default function TestPage(){
     const goldTextGradient = `bg-gradient-to-r from-amber-600 via-yellow-500 to-orange-400 bg-clip-text text-transparent`;
 
    return <>
-   
-      <header className="w-full fixed top-0 z-50">
-        <Navbar scroll={true}/>
-      </header>
+    <header className="w-full fixed top-0 z-50">
+            <Navbar scroll={true} courses = {courses}/>
+    </header>      
       
       {/*Main screen. p-10 has padding left and right, maybe just change to have columns surround it.*/} 
       <div className="pl-10 pt-2 pr-10 gap-24 pb-24 text-gray-950 md:pb-40 dark:text-white bg-slate-900">
