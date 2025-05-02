@@ -19,7 +19,7 @@ import { SectionWithRMP } from "@/lib/sjsu/types";
 
 export default function CourseInformation({section} : {section : SectionWithRMP}) {
   return (
-    <Tabs defaultValue="account" className="w-[500px]">
+    <Tabs defaultValue="information" className="w-[500px]">
       <TabsList className="grid w-full grid-cols-3">
         <TabsTrigger value="information" className = "">Information</TabsTrigger>
         <TabsTrigger value="description" className = "">Description</TabsTrigger>
