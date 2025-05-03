@@ -186,7 +186,7 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses, semest
   };
 
   return (
-    <form className="text-foreground p-4 pb-2 rounded-md ">
+    <form className="text-foreground p-4 pb-2 rounded-md " onSubmit={e => e.preventDefault()}>
 
       {/* Filters and Actions */}
       <div className="flex flex-wrap items-center gap-2">
