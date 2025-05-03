@@ -29,7 +29,7 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses, semest
   //Boolean for whether or not user wants to search for available courses or non-available courses (no idea why they would want this).
     //Maybe query for least amount of people waitlisting for this class?
     //Automatically on Open.
-  const [availableCourses, setAvailableCourses] = useState(true);
+  const [availableCourses, setAvailableCourses] = useState("all");
 
   //Sets string for what the courses should be sortby. If "No Filter," don't sort.
   const [sortBy, setSortBy] = useState("No Filter");
@@ -105,6 +105,9 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses, semest
         return false;
 
       if (modeTypeSelected.length > 0 && !modeTypeSelected.includes(c.instruction_mode))
+        return false;
+
+      if ((availableCourses === "open" && parseInt(c.open_seats) <= 0) || (availableCourses === "full" && parseInt(c.open_seats) > 0))
         return false;
 
       const parsedDayTimes = parseSectionDayTimes(c);
@@ -189,13 +192,14 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses, semest
       <div className="flex flex-wrap items-center gap-2">
 
         {/*Availability Selector */}
-        <Select onValueChange={(value) => setAvailableCourses(value === "true")}>
+        <Select onValueChange={setAvailableCourses}>
           <SelectTrigger className="w-[120px] bg-[#2a2a2a] border-none font-semibold text-white focus-visible:ring-0 pl-2 pr-2 hover:bg-[#1a1a1a]">
             <SelectValue placeholder="Availability" />
           </SelectTrigger>
           <SelectContent className = "font-semibold bg-[#2a2a2a] border-none">
-            <SelectItem className = "text-green-600 focus:bg-[#2f2f2f] focus:text-green-600" value="true">Open</SelectItem>
-            <SelectItem className = "text-red-600 focus:bg-[#2f2f2f] focus:text-red-600" value="false">Full</SelectItem>
+            <SelectItem className = "text-white focus:bg-[#2f2f2f] focus:text-white" value="all">Availability</SelectItem>
+            <SelectItem className = "text-green-600 focus:bg-[#2f2f2f] focus:text-green-600" value="open">Open</SelectItem>
+            <SelectItem className = "text-red-600 focus:bg-[#2f2f2f] focus:text-red-600" value="full">Full</SelectItem>
           </SelectContent>
         </Select>
         
