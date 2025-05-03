@@ -37,7 +37,7 @@ export default function CourseInformation({section} : {section : SectionWithRMP}
             </CardDescription>
           </CardHeader> */}
 
-          <CardContent className="space-y-2 flex items-center justify-center h-60">
+          <CardContent className="space-y-2 flex items-center justify-center h-72">
               {/* Location will also specify if online. */}
               <div className = "">
                 <h1 className = "text-2xl font-bold text-center text-amber-600">Location: {section.location}</h1>
