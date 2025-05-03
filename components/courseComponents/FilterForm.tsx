@@ -12,12 +12,15 @@ import MultiSelectFilter from "@/components/ui/multi-select-filter"
 import SelectTimeComponent from "@/components/ui/selectTimeComponent"
 import Combobox from "@/components/ui/comboBox"
 import { parseSectionDayTimes } from "@/lib/sjsu/time";
+import { useRouter } from "next/navigation";
 
 
 //Query base off useState values, have a limit(timelimit) so it doesn't check after every character change.
 
 //allCourses references a variable that holds all the courses. setCourses is a setter of useState for courses in the CourseTable, change to query.
 export default function TopicFilterForm ({allCourses, setFilteredCourses, semesters, selectedSemester} : {allCourses: SectionWithRMP[], setFilteredCourses : React.Dispatch<React.SetStateAction<SectionWithRMP[]>>, semesters : [string, number][], selectedSemester: {season: string, year: number}}) {
+  const router = useRouter();
+  
   //The course search bar value.
   const [inputCourses, setInputCourses] = useState("");
   //The debounced course search bar value
@@ -199,7 +202,12 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses, semest
         {/*Select time/schedule component. */}
         <SelectTimeComponent selectedTimes = {selectedTimes} setSelectedTimes={setSelectedTimes}></SelectTimeComponent>
 
-        <Combobox allSemesters = {allSemesters} semester = {semester} setSemester={setSemester}></Combobox>
+        <Combobox allSemesters = {allSemesters} semester = {semester} setSemester={semester => {
+          setSemester(semester);
+
+          const [season, year] = semester.split(" ");
+          router.push(`/courseTest?season=${season.toLowerCase()}&year=${year}`);
+        }}></Combobox>
 
       </div>
 

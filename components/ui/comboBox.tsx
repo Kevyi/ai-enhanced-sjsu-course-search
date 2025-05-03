@@ -26,7 +26,7 @@ export default function Combobox({
 }: {
   allSemesters: string[];
   semester: string;
-  setSemester: React.Dispatch<React.SetStateAction<string>>;
+  setSemester: (val: string) => void;
 }) {
   const [open, setOpen] = useState(false);
 
