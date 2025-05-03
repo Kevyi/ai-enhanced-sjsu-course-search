@@ -43,6 +43,21 @@ const getSectionsPart = unstable_cache(
           },
         },
       },
+      {
+        $lookup: {
+          from: "course_descriptions",
+          localField: "course_title",
+          foreignField: "course",
+          as: "description",
+        },
+      },
+      {
+        $set: {
+          description: {
+            $arrayElemAt: ["$description.description", 0],
+          },
+        },
+      },
     ]);
     return (await cursor.toArray()) as unknown as SectionWithRMP[];
   },
