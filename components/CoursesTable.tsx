@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useState, useEffect, useRef } from "react";
 import {
   ColumnDef,
   flexRender,
@@ -9,6 +9,7 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { MessageSquare, Trash2, X } from "lucide-react";
 
 import { SectionWithRMP } from "@/lib/sjsu/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -16,78 +17,202 @@ import { DataTablePagination } from "@/components/ui/table-pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 
-// --------------------------------------------------------------------
-// 1) AIChatBox with a Close (X) button that's red
-// --------------------------------------------------------------------
-function AiChatBox({ onClose }: { onClose: () => void }) {
-  interface Message {
-    sender: "user" | "assistant";
-    text: string;
-  }
+interface Message {
+  sender: "user" | "assistant" | "ai";
+  text: string;
+  timestamp: string;
+  context?: {
+    lastCourseCode?: string;
+    lastInstructor?: string;
+    lastInstructorEmail?: string;
+  };
+}
 
+export default function AiChatBox() {
+  const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [userInput, setUserInput] = useState("");
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
-  async function handleSendMessage(e: React.FormEvent) {
-    e.preventDefault();
-    if (!userInput.trim()) return;
+  useEffect(() => {
+    setIsMounted(true);
+    const savedMessages = localStorage.getItem("chatMessages");
+    if (savedMessages) {
+      setMessages(JSON.parse(savedMessages));
+    }
+  }, []);
 
-    // Add user's message to local state
-    setMessages((prev) => [...prev, { sender: "user", text: userInput }]);
+  useEffect(() => {
+    if (isMounted) {
+      localStorage.setItem("chatMessages", JSON.stringify(messages));
+    }
+  }, [messages, isMounted]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const handleSend = async () => {
+    if (!input.trim()) return;
+
+    const newMessage: Message = {
+      text: input,
+      sender: "user",
+      timestamp: new Date().toISOString(),
+    };
+
+    setMessages((prev) => [...prev, newMessage]);
+    setInput("");
+    setIsLoading(true);
 
     try {
-      // Call our /api/chat endpoint
-      const res = await fetch("/api/chat", {
+      const response = await fetch("/api/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userMessage: userInput }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userMessage: input,
+          context: messages.length > 0 ? {
+            lastCourseCode: messages[messages.length - 1].context?.lastCourseCode,
+            lastInstructor: messages[messages.length - 1].context?.lastInstructor,
+            lastInstructorEmail: messages[messages.length - 1].context?.lastInstructorEmail,
+          } : undefined,
+        }),
       });
-      const data = await res.json();
 
-      if (data.reply) {
-        // Add AI's response
-        setMessages((prev) => [...prev, { sender: "assistant", text: data.reply }]);
+      console.log("Debug: Response status:", response.status);
+      const data = await response.json();
+      console.log("Debug: Received data:", data);
+
+      if (!data.reply) {
+        console.error("Debug: No reply in response:", data);
+        throw new Error("Invalid response format");
       }
-    } catch (error) {
-      console.error("Error sending message:", error);
-      // Handle errors here if desired
-    }
 
-    // Clear input
-    setUserInput("");
-  }
+      const aiMessage: Message = {
+        text: data.reply,
+        sender: "ai",
+        timestamp: new Date().toISOString(),
+        context: data.context,
+      };
+
+      console.log("Debug: Created AI message:", aiMessage);
+      setMessages((prev) => [...prev, aiMessage]);
+    } catch (error) {
+      console.error("Error:", error);
+      const errorMessage: Message = {
+        text: "Sorry, I encountered an error. Please try again.",
+        sender: "ai",
+        timestamp: new Date().toISOString(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const clearChat = () => {
+    setMessages([]);
+    localStorage.removeItem("chatMessages");
+  };
+
+  if (!isMounted) return null;
 
   return (
-    <div className="relative border rounded p-4 w-full max-w-md bg-white shadow">
-      {/* X button made red */}
-      <button
-        onClick={onClose}
-        className="absolute top-2 right-2 text-red-500 hover:text-red-700"
-      >
-        ✕
-      </button>
-
-      <h2 className="text-lg font-bold mb-2">AI Chatbox</h2>
-      <div className="h-64 overflow-y-auto border p-2 mb-2">
-        {messages.map((msg, idx) => (
-          <div key={idx} className="mb-2">
-            <strong>{msg.sender === "user" ? "You" : "AI"}:</strong> {msg.text}
-          </div>
-        ))}
-      </div>
-
-      <form onSubmit={handleSendMessage} className="flex gap-2">
-        <input
-          type="text"
-          value={userInput}
-          onChange={(e) => setUserInput(e.target.value)}
-          className="flex-1 border rounded px-2 py-1"
-          placeholder="Type a message..."
-        />
-        <button className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md">
-          Send
+    <div className="fixed bottom-4 right-4 z-50">
+      {!isOpen ? (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-colors"
+        >
+          <MessageSquare className="w-6 h-6" />
         </button>
-      </form>
+      ) : (
+        <div className="bg-white rounded-lg shadow-xl w-96 h-[600px] flex flex-col">
+          <div className="p-4 border-b flex justify-between items-center">
+            <h2 className="text-lg font-semibold">Course Assistant</h2>
+            <div className="flex space-x-2">
+              <button
+                onClick={clearChat}
+                className="text-gray-500 hover:text-gray-700 p-1"
+                title="Clear chat"
+              >
+                <Trash2 className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="text-gray-500 hover:text-gray-700 p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {messages.map((message, index) => {
+              console.log("Debug: Rendering message:", message);
+              return (
+                <div
+                  key={index}
+                  className={`flex ${
+                    message.sender === "user" ? "justify-end" : "justify-start"
+                  }`}
+                >
+                  <div
+                    className={`max-w-[80%] rounded-lg p-3 ${
+                      message.sender === "user"
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-100 text-gray-800"
+                    }`}
+                  >
+                    <div className="whitespace-pre-wrap">{message.text}</div>
+                    <div className="text-xs opacity-70 mt-1">
+                      {new Date(message.timestamp).toLocaleTimeString()}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+            {isLoading && (
+              <div className="flex justify-start">
+                <div className="bg-gray-100 rounded-lg p-3 text-gray-800">
+                  <div className="flex space-x-2">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100" />
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200" />
+                  </div>
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+          <div className="p-4 border-t">
+            <div className="flex space-x-2">
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && handleSend()}
+                placeholder="Ask about courses..."
+                className="flex-1 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <button
+                onClick={handleSend}
+                disabled={isLoading}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -101,7 +226,7 @@ function AiChatToggle() {
   return (
     <div className="fixed bottom-4 right-4 z-50">
       {isOpen ? (
-        <AiChatBox onClose={() => setIsOpen(false)} />
+        <AiChatBox />
       ) : (
         <button
           onClick={() => setIsOpen(true)}
@@ -213,6 +338,11 @@ export function CoursesTable({
     );
   }
 
+  // Handler to remove course from local cart
+  function removeFromCart(classNumber: string) {
+    setCart((prev) => prev.filter((c) => c.class_number !== classNumber));
+  }
+
   // Resolve the data from the promise
   const sections = use(sectionsPromise);
 
@@ -292,16 +422,24 @@ export function CoursesTable({
       <DataTablePagination table={table} />
 
       {/* Cart Preview */}
-      <div className="border p-4">
+      <div className="mt-4 p-4 border rounded-lg">
         <h2 className="font-bold">Your Cart</h2>
         {cart.length === 0 ? (
           <p>No courses added yet.</p>
         ) : (
-          cart.map((course) => (
-            <div key={course.class_number}>
-              {course.course_title} – Section {course.section}
-            </div>
-          ))
+          <div className="space-y-2">
+            {cart.map((course) => (
+              <div key={course.class_number} className="flex items-center justify-between">
+                <span>{course.course_title} – Section {course.section}</span>
+                <button
+                  onClick={() => removeFromCart(course.class_number)}
+                  className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-sm"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
         )}
       </div>
 

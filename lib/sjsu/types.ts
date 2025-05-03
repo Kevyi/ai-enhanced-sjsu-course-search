@@ -17,14 +17,14 @@ export type Section = {
   dates: string;
   open_seats: string;
   notes: string;
+  term: string;
+  year: number;
 };
 
-export type SectionWithRMP = Section & {
-  rmp: {
-    avgDifficulty: number;
-    avgRating: number;
-    id: string;
-    numRatings: number;
-    wouldTakeAgainPercent: number;
-  } | null;
-};
+export interface SectionWithRMP extends Section {
+  rmp_rating?: number;
+  rmp_difficulty?: number;
+  rmp_tags?: string[];
+  rmp_reviews?: string[];
+  rmp_url?: string;
+}
