@@ -112,7 +112,7 @@ const TiltCard = ({section, inShoppingCart}: {section: SectionWithRMP, inShoppin
                         </div>
                         {/* If undefined, display none instead. */}
 
-                          <span className = "m-1 font-bold">RMP Score: {section.rmp?.avgRating} </span>
+                          <span className = "m-1 font-bold">RMP Score: {section.rmp?.avgRating ?? "N/A"} </span>
                     </div>
                     
                     
