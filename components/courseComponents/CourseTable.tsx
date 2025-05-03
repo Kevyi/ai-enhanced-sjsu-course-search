@@ -7,8 +7,7 @@ import TablePagination from "@/components/ui/courseTablePagination"
 
 
 
-export default function CourseTable({sections, semesters} : {sections : SectionWithRMP[], semesters : [string, number][]}){
-
+export default function CourseTable({sections, semesters, selectedSemester} : {sections : SectionWithRMP[], semesters : [string, number][], selectedSemester: {season: string, year: number}}){
     //Kind of bad to have this reNamed from sections to courses. 
         //Only way to update the renders of each course throughout.
 
@@ -23,7 +22,7 @@ export default function CourseTable({sections, semesters} : {sections : SectionW
 
         <div className = "border border-borderLines bg-gradient-to-b from-slate-900 to-main3 flex-col max-w-5xl min-w-xl">
 
-            <FilterForm allCourses = {sections} setFilteredCourses = {setFilteredCourses} semesters = {semesters}></FilterForm>
+            <FilterForm allCourses = {sections} setFilteredCourses = {setFilteredCourses} semesters = {semesters} selectedSemester={selectedSemester}></FilterForm>
 
             <div className = "flex flex-row min-h-screen flex-wrap justify-center p-10 pt-5">
                 {filteredCourses.slice(coursesPerPage * (paginationIndex -1), coursesPerPage * paginationIndex).map((item) => (

@@ -17,8 +17,7 @@ import { parseSectionDayTimes } from "@/lib/sjsu/time";
 //Query base off useState values, have a limit(timelimit) so it doesn't check after every character change.
 
 //allCourses references a variable that holds all the courses. setCourses is a setter of useState for courses in the CourseTable, change to query.
-export default function TopicFilterForm ({allCourses, setFilteredCourses, semesters} : {allCourses: SectionWithRMP[], setFilteredCourses : React.Dispatch<React.SetStateAction<SectionWithRMP[]>>, semesters : [string, number][]}) {
-
+export default function TopicFilterForm ({allCourses, setFilteredCourses, semesters, selectedSemester} : {allCourses: SectionWithRMP[], setFilteredCourses : React.Dispatch<React.SetStateAction<SectionWithRMP[]>>, semesters : [string, number][], selectedSemester: {season: string, year: number}}) {
   //The course search bar value.
   const [inputCourses, setInputCourses] = useState("");
   //The debounced course search bar value
@@ -39,7 +38,7 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses, semest
   const [RMPscore, setRMPScore] = useState(0);
 
   //For semester. Semester will be a string concat with Season + Year (string + number) = String.
-  const [semester, setSemester] = useState("");
+  const [semester, setSemester] = useState(selectedSemester.season.charAt(0).toUpperCase() + selectedSemester.season.slice(1) + " " + selectedSemester.year);
     //Hold all the concatonated semesters.
     const allSemesters: string[] = [];
     for (const [season, count] of semesters) {
@@ -62,8 +61,6 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses, semest
   const [courseTypeSelected, setCourseTypeSelected] = useState<string[]>([]);
 
   const [modeTypeSelected, setModeTypeSelected] = useState<string[]>([]);
-
-  const [semesterSelected, setSemesterSelected] = useState<[string, number]>();
 
   //Hold array of all the teachers.
   // const [teachers, setTeachers] = useState<Teacher[]>([]);

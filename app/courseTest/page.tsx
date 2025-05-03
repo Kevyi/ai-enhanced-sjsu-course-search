@@ -9,13 +9,17 @@ export default async function TestPage({ searchParams }: { searchParams: Promise
     const semesters = (await getCachedAvailableSemesters());
     const latestSemester = semesters[semesters.length - 1];
     const { season, year } = await searchParams;
-    const sections = (await getCachedSections(season as Season ?? latestSemester[0], year ? parseInt(year) : latestSemester[1]));
+    const selectedSemester = {
+      season: season as Season ?? latestSemester[0],
+      year: year ? parseInt(year) : latestSemester[1]
+    };
+    const sections = (await getCachedSections(selectedSemester.season, selectedSemester.year));
 
     return <>
 
       <div>
         <Navbar scroll={false} courses = {sections}></Navbar>
-        <CourseTable sections = {sections} semesters = {semesters}></CourseTable>
+        <CourseTable sections = {sections} semesters = {semesters} selectedSemester={selectedSemester}></CourseTable>
       </div>
       
 
