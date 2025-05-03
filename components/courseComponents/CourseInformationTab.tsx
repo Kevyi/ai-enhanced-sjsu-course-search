@@ -83,20 +83,20 @@ export default function CourseInformation({section} : {section : SectionWithRMP}
       <TabsContent value="reviews">
         <Card className = "bg-gradient-to-br from-slate-800 to-indigo-900 text-white">
 
-          <CardContent className="space-y-2 flex items-center justify-center h-72 overflow-y-scroll">
-            <div className="h-full">
+          <CardContent className="space-y-2 flex items-center justify-center h-72 overflow-y-scroll [scrollbar-width:none]">
+            <div className="h-full flex-col items-center justify-center ">
                 {section.rmp ?
                   <div className="flex flex-col gap-2 py-4">
                     <div className="flex gap-4 items-center">
                       <h1 className="font-bold text-2xl">Recent Reviews</h1>
-                      <a href={"https://www.ratemyprofessors.com/professor/" + section.rmp.legacyId} target="_blank">
+                      <a className = "ml-auto" href={"https://www.ratemyprofessors.com/professor/" + section.rmp.legacyId} target="_blank">
                         <Button>Open in Rate My Professor</Button>
                       </a>
                     </div>
                     <CourseReviews rmpId={section.rmp.id} />
                   </div>
                 :
-                  <p>This instructor does not have a Rate My Professor page.</p>
+                  <p className = 'text-center'>This instructor does not have a Rate My Professor page.</p>
                 }
             </div>
           </CardContent>
