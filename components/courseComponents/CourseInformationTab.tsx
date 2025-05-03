@@ -84,7 +84,15 @@ export default function CourseInformation({section} : {section : SectionWithRMP}
 
           <CardContent className="space-y-2 flex items-center justify-center h-60">
             <div className="space-y-1">
-                reviews
+                {section.rmp ?
+                  <div>
+                    <a href={"https://www.ratemyprofessors.com/professor/" + section.rmp.legacyId} target="_blank">
+                      <Button>Open in Rate My Professor</Button>
+                    </a>
+                  </div>
+                :
+                  <p>This instructor does not have a Rate My Professor page.</p>
+                }
             </div>
           </CardContent>
 
