@@ -71,9 +71,9 @@ export default function CourseInformation({section} : {section : SectionWithRMP}
       <TabsContent value="description">
         <Card className = "bg-gradient-to-br from-slate-800 to-indigo-900 text-white">
 
-          <CardContent className="space-y-2 flex items-center justify-center h-60">
+          <CardContent className="space-y-2 flex items-center justify-center h-72">
             <div className="space-y-1">
-                place course description here.
+                {section.description}
             </div>
           </CardContent>
 
