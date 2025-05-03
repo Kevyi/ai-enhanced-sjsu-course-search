@@ -21,10 +21,14 @@ export type Section = {
   year: number;
 };
 
-export interface SectionWithRMP extends Section {
-  rmp_rating?: number;
-  rmp_difficulty?: number;
-  rmp_tags?: string[];
-  rmp_reviews?: string[];
-  rmp_url?: string;
-}
+export type SectionWithRMP = Section & {
+  rmp: {
+    avgDifficulty: number;
+    avgRating: number;
+    id: string;
+    numRatings: number;
+    wouldTakeAgainPercent: number;
+  } | null;
+};
+
+export type SchoolDays = "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat";

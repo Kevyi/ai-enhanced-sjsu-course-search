@@ -1,31 +1,50 @@
 "use server";
 
 import { unstable_cache } from "next/cache";
-import { SectionWithRMP } from "./types";
+import client from "../mongodb";
+import { Season, SectionWithRMP } from "./types";
+import { getAvailableSemesters } from ".";
 
 const PART_LENGTH = 2000;
 
 const getSectionsPart = unstable_cache(
-  async (term: string, year: number, part: number) => {
-    try {
-      console.log("Debug: Fetching sections part", part, "for term", term, "year", year);
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-      const url = `${baseUrl}/api/sections?term=${term}&year=${year}`;
-      console.log("Debug: Fetching from URL:", url);
-      
-      const response = await fetch(url);
-      if (!response.ok) {
-        console.error("Debug: Failed to fetch sections:", response.status, response.statusText);
-        throw new Error(`Failed to fetch sections: ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      console.log("Debug: Received sections data length:", data.length);
-      return data.slice(part * PART_LENGTH, (part + 1) * PART_LENGTH);
-    } catch (error) {
-      console.error("Debug: Error in getSectionsPart:", error);
-      throw error;
-    }
+  async (
+    season: Season,
+    year: number,
+    part: number
+  ) => {
+    await client.connect();
+
+    const db = client.db("cmpe151");
+    const collection = db.collection("course_sections");
+    const cursor = await collection.aggregate([
+      { $match: { season, year } },
+      { $skip: part * PART_LENGTH },
+      { $limit: PART_LENGTH },
+      {
+        $project: {
+          _id: 0,
+          season: 0,
+          year: 0,
+        },
+      },
+      {
+        $lookup: {
+          from: "rmp_professors",
+          localField: "instructor_email",
+          foreignField: "email",
+          as: "rmp",
+        },
+      },
+      {
+        $set: {
+          rmp: {
+            $arrayElemAt: ["$rmp.rmp", 0],
+          },
+        },
+      },
+    ]);
+    return (await cursor.toArray()) as unknown as SectionWithRMP[];
   },
   ["sections-part"],
   { revalidate: 3600 }
@@ -83,3 +102,11 @@ export async function clearCache() {
   // This is a no-op since we're using Next.js's built-in caching
   return;
 }
+
+export const getCachedAvailableSemesters = unstable_cache(
+  async () => {
+    return await getAvailableSemesters();
+  },
+  [],
+  { revalidate: 1800 }
+)

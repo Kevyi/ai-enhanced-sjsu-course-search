@@ -1,7 +1,7 @@
 "use server";
 
 import {HTMLAnchorElement, HTMLTableCellElement, Window} from "happy-dom";
-import {Season, Section} from "@/lib/sjsu/types";
+import {SchoolDays, Season, Section} from "@/lib/sjsu/types";
 
 type TableHeadingProcessor = {name: keyof Section} | {process: (section: Partial<Section>, td: HTMLTableCellElement) => void};
 
