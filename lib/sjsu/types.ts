@@ -24,6 +24,7 @@ export type SectionWithRMP = Section & {
     avgDifficulty: number;
     avgRating: number;
     id: string;
+    legacyId: number;
     numRatings: number;
     wouldTakeAgainPercent: number;
   } | null;

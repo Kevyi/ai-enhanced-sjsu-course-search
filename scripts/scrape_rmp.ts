@@ -55,6 +55,7 @@ import { SectionWithRMP } from "@/lib/sjsu/types";
                   avgDifficulty: rmpInfo.avgDifficulty,
                   avgRating: rmpInfo.avgRating,
                   id: rmpInfo.id,
+                  legacyId: rmpInfo.legacyId,
                   numRatings: rmpInfo.numRatings,
                   wouldTakeAgainPercent: rmpInfo.wouldTakeAgainPercent,
                 }
