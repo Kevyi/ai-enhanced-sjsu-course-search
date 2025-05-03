@@ -16,6 +16,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs"
 import { SectionWithRMP } from "@/lib/sjsu/types";
+import CourseReviews from "./CourseReviews"
 
 export default function CourseInformation({section} : {section : SectionWithRMP}) {
   return (
@@ -82,13 +83,17 @@ export default function CourseInformation({section} : {section : SectionWithRMP}
       <TabsContent value="reviews">
         <Card className = "bg-gradient-to-br from-slate-800 to-indigo-900 text-white">
 
-          <CardContent className="space-y-2 flex items-center justify-center h-60">
-            <div className="space-y-1">
+          <CardContent className="space-y-2 flex items-center justify-center h-72 overflow-y-scroll">
+            <div className="h-full">
                 {section.rmp ?
-                  <div>
-                    <a href={"https://www.ratemyprofessors.com/professor/" + section.rmp.legacyId} target="_blank">
-                      <Button>Open in Rate My Professor</Button>
-                    </a>
+                  <div className="flex flex-col gap-2 py-4">
+                    <div className="flex gap-4 items-center">
+                      <h1 className="font-bold text-2xl">Recent Reviews</h1>
+                      <a href={"https://www.ratemyprofessors.com/professor/" + section.rmp.legacyId} target="_blank">
+                        <Button>Open in Rate My Professor</Button>
+                      </a>
+                    </div>
+                    <CourseReviews rmpId={section.rmp.id} />
                   </div>
                 :
                   <p>This instructor does not have a Rate My Professor page.</p>
