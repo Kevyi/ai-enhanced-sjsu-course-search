@@ -8,6 +8,7 @@ export type RMPProfessorInfo = {
         "avgDifficulty": number,
         "avgRating": number,
         "id": string,
+        "legacyId": string,
         "numRatings": number,
         "wouldTakeAgainPercent": number
     } | null;

@@ -1,27 +1,51 @@
-// 'use client';
+"use client";
 
-import CourseTable from "@/components/courseComponents/CourseTable"
+import { useState, useEffect } from "react";
 import { getCachedAvailableSemesters, getCachedSections } from "@/lib/sjsu/cached";
-import Navbar from "@/components/Navbar"
-import { Season } from "@/lib/sjsu/types";
+import { SectionWithRMP } from "@/lib/sjsu/types";
+import Navbar from "@/components/Navbar";
+import CourseTable from "@/components/courseComponents/CourseTable";
+import AiChatBox from "@/components/ui/AiChatBox";
 
-export default async function TestPage({ searchParams }: { searchParams: Promise<{ season?: string, year?: string }> }){
-    const semesters = (await getCachedAvailableSemesters());
-    const latestSemester = semesters[semesters.length - 1];
-    const { season, year } = await searchParams;
-    const selectedSemester = {
-      season: season as Season ?? latestSemester[0],
-      year: year ? parseInt(year) : latestSemester[1]
+export default function TestPage() {
+  const [sections, setSections] = useState<SectionWithRMP[]>([]);
+  const [semesters, setSemesters] = useState<[string, number][]>([]);
+  const [selectedSemester, setSelectedSemester] = useState<{season: string, year: number}>({season: "spring", year: 2025});
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const availableSemesters = await getCachedAvailableSemesters();
+        console.log("Available semesters:", availableSemesters);
+        setSemesters(availableSemesters);
+        const latestSemester = availableSemesters[availableSemesters.length - 1];
+        setSelectedSemester({season: latestSemester[0], year: latestSemester[1]});
+        const sectionsData = await getCachedSections(latestSemester[0], latestSemester[1]);
+        console.log("Fetched sections data:", sectionsData.length, "sections");
+        if (sectionsData.length > 0) {
+          console.log("Sample section:", sectionsData[0]);
+        }
+        setSections(sectionsData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     };
-    const sections = (await getCachedSections(selectedSemester.season, selectedSemester.year));
 
-    return <>
+    fetchData();
+  }, []);
 
-      <div>
-        <Navbar scroll={false} courses = {sections}></Navbar>
-        <CourseTable sections = {sections} semesters = {semesters} selectedSemester={selectedSemester}></CourseTable>
-      </div>
-      
+  // Add console logging when sections state changes
+  useEffect(() => {
+    console.log("TestPage sections state updated:", sections.length, "sections");
+  }, [sections]);
 
-    </>
+  return (
+    <div className="min-h-screen bg-gray-100">
+      <Navbar scroll={false} courses={sections} />
+      <main className="container mx-auto px-4 py-8">
+        <CourseTable sections={sections} semesters={semesters} selectedSemester={selectedSemester} />
+        <AiChatBox sections={sections} />
+      </main>
+    </div>
+  );
 }

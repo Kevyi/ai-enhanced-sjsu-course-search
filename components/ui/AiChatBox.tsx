@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import { MessageSquare, X, Trash2 } from "lucide-react";
+import { SectionWithRMP } from "@/lib/sjsu/types";
 
 interface Message {
   sender: "user" | "assistant" | "typing";
@@ -13,7 +15,12 @@ interface ContextState {
   lastCourseCode?: string;
 }
 
-export default function AiChatBox() {
+interface AiChatBoxProps {
+  sections: SectionWithRMP[];
+}
+
+export default function AiChatBox({ sections }: AiChatBoxProps) {
+  const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>(() => {
     if (typeof window !== "undefined") {
       const stored = sessionStorage.getItem("chatMessages");
@@ -59,20 +66,24 @@ export default function AiChatBox() {
     sessionStorage.setItem("chatContext", JSON.stringify(context));
   }, [context]);
 
+  useEffect(() => {
+    console.log("AiChatBox received sections:", sections);
+    if (sections && sections.length > 0) {
+      console.log("Sample section data:", sections[0]);
+    }
+  }, [sections]);
+
+  const clearChat = () => {
+    setMessages([]);
+    setContext({});
+    sessionStorage.removeItem("chatMessages");
+    sessionStorage.removeItem("chatContext");
+  };
+
   async function handleSendMessage(e: React.FormEvent) {
     e.preventDefault();
     const trimmed = userInput.trim();
     if (!trimmed) return;
-
-    const lower = trimmed.toLowerCase();
-    if (lower.includes("sjsu")) setContext((ctx) => ({ ...ctx, university: "SJSU" }));
-    if (lower.includes("fall") || lower.includes("spring"))
-      setContext((ctx) => ({ ...ctx, semester: trimmed }));
-
-    const courseMatch = trimmed.match(/\b[A-Z]{2,4}\s?\d{3}\b/);
-    if (courseMatch) {
-      setContext((ctx) => ({ ...ctx, lastCourseCode: courseMatch[0].replace(/\s+/g, "") }));
-    }
 
     setUserInput("");
     setMessages((prev) => [...prev, { sender: "user", text: trimmed }]);
@@ -90,10 +101,16 @@ export default function AiChatBox() {
         body: JSON.stringify({
           userMessage: trimmed,
           context,
+          sections,
         }),
       });
 
       const data = await res.json();
+
+      // Update context with the new context from the response
+      if (data.context) {
+        setContext(data.context);
+      }
 
       setMessages((prev) => [
         ...prev.filter((msg) => msg.sender !== "typing"),
@@ -119,59 +136,87 @@ export default function AiChatBox() {
   }
 
   return (
-    <div className="fixed bottom-8 right-8 border rounded-xl w-[900px] h-[800px] flex flex-col shadow-2xl bg-white z-50">
-      <div className="px-6 py-4 border-b font-semibold text-xl">AI Chatbox</div>
-
-      <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 bg-gray-50 font-mono text-[14px] leading-relaxed">
-        {messages.map((msg, idx) => {
-          const isUser = msg.sender === "user";
-          const isTyping = msg.sender === "typing";
-
-          return (
-            <div
-              key={idx}
-              className={`flex ${isUser ? "justify-end" : "justify-start"}`}
-            >
-              <div
-                className={`whitespace-pre-wrap break-words rounded-lg px-4 py-2 max-w-full overflow-auto ${
-                  isUser ? "bg-blue-600 text-white" : "bg-gray-200 text-black"
-                } ${isTyping ? "italic" : ""}`}
-              >
-                {isTyping ? (
-                  <span className="text-gray-700 italic">Typing{typingDots}</span>
-                ) : (
-                  <pre className="overflow-x-auto whitespace-pre-wrap">
-                    {msg.text}
-                  </pre>
-                )}
-              </div>
-            </div>
-          );
-        })}
-        <div ref={messagesEndRef} />
-      </div>
-
-      <form onSubmit={handleSendMessage} className="p-4 border-t flex space-x-2">
-        <textarea
-          value={userInput}
-          onChange={(e) => setUserInput(e.target.value)}
-          rows={1}
-          placeholder="Type your message..."
-          className="flex-1 border rounded-md px-4 py-3 text-base resize-none overflow-hidden bg-white"
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              e.currentTarget.form?.requestSubmit();
-            }
-          }}
-        />
+    <div className="fixed bottom-4 right-4 z-50">
+      {!isOpen ? (
         <button
-          type="submit"
-          className="bg-blue-700 hover:bg-blue-800 text-white px-5 py-3 rounded-md text-base"
+          onClick={() => setIsOpen(true)}
+          className="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-colors"
         >
-          Send
+          <MessageSquare className="w-6 h-6" />
         </button>
-      </form>
+      ) : (
+        <div className="bg-white rounded-lg shadow-xl w-96 h-[600px] flex flex-col">
+          <div className="p-4 border-b flex justify-between items-center">
+            <h2 className="text-lg font-semibold">AI Chatbox</h2>
+            <div className="flex space-x-2">
+              <button
+                onClick={clearChat}
+                className="text-gray-500 hover:text-gray-700 p-1"
+                title="Clear chat"
+              >
+                <Trash2 className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="text-gray-500 hover:text-gray-700 p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 bg-gray-50 font-mono text-[14px] leading-relaxed">
+            {messages.map((msg, idx) => {
+              const isUser = msg.sender === "user";
+              const isTyping = msg.sender === "typing";
+
+              return (
+                <div
+                  key={idx}
+                  className={`flex ${isUser ? "justify-end" : "justify-start"}`}
+                >
+                  <div
+                    className={`whitespace-pre-wrap break-words rounded-lg px-4 py-2 max-w-full overflow-auto ${
+                      isUser ? "bg-blue-600 text-white" : "bg-gray-200 text-black"
+                    } ${isTyping ? "italic" : ""}`}
+                  >
+                    {isTyping ? (
+                      <span className="text-gray-700 italic">Typing{typingDots}</span>
+                    ) : (
+                      <pre className="overflow-x-auto whitespace-pre-wrap">
+                        {msg.text}
+                      </pre>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+            <div ref={messagesEndRef} />
+          </div>
+
+          <form onSubmit={handleSendMessage} className="p-4 border-t flex space-x-2">
+            <textarea
+              value={userInput}
+              onChange={(e) => setUserInput(e.target.value)}
+              rows={1}
+              placeholder="Type your message..."
+              className="flex-1 border rounded-md px-4 py-3 text-base resize-none overflow-hidden bg-white"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  e.currentTarget.form?.requestSubmit();
+                }
+              }}
+            />
+            <button
+              type="submit"
+              className="bg-blue-700 hover:bg-blue-800 text-white px-5 py-3 rounded-md text-base"
+            >
+              Send
+            </button>
+          </form>
+        </div>
+      )}
     </div>
   );
 }

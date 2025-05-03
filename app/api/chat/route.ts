@@ -5,6 +5,7 @@ import path from "path";
 import { SectionWithRMP } from "@/lib/sjsu/types";
 import { getCachedSections } from "@/lib/sjsu/cached";
 import fs from "fs/promises";
+import client from "@/lib/mongodb";
 
 // Setup OpenAI client
 const openai = new OpenAI({
@@ -30,6 +31,7 @@ interface RMPInfo {
   numRatings: number;
   wouldTakeAgainPercent: number;
   id: string;
+  legacyId: string;
 }
 
 interface InstructorData {
@@ -119,6 +121,22 @@ async function fetchInstructorRating(name: string): Promise<string> {
   return rating?.avgRating?.toString() || "N/A";
 }
 
+async function fetchCourseDescription(courseCode: string): Promise<string> {
+  try {
+    await client.connect();
+    const db = client.db("cmpe151");
+    const collection = db.collection("course_descriptions");
+    
+    const course = await collection.findOne({ course: courseCode });
+    return course?.description || "No course description available.";
+  } catch (error) {
+    console.error("Error fetching course description:", error);
+    return "Error fetching course description.";
+  } finally {
+    await client.close();
+  }
+}
+
 function analyzeCourseData(course: SectionWithRMP, instructorRating: string) {
   const analysis = {
     difficulty: "Unknown",
@@ -177,7 +195,9 @@ function analyzeCourseData(course: SectionWithRMP, instructorRating: string) {
   return analysis;
 }
 
-function formatCourseInfo(course: SectionWithRMP, rmpInfo: RMPInfo): string {
+function formatCourseInfo(course: SectionWithRMP, rmpInfo: RMPInfo, description: string): string {
+  const rmpUrl = rmpInfo.legacyId !== "N/A" ? `https://www.ratemyprofessors.com/professor/${rmpInfo.legacyId}` : "N/A";
+  
   return `
 Course: ${course.course_title}
 Section: ${course.section}
@@ -187,107 +207,188 @@ Location: ${course.location}
 Schedule: ${course.dates}
 Availability: ${course.open_seats} seats
 
+Course Description:
+${description}
+
 Instructor Reviews:
 - Overall Rating: ${rmpInfo.avgRating || 0}/5
 - Difficulty: ${rmpInfo.avgDifficulty || 0}/5
 - Number of Reviews: ${rmpInfo.numRatings || 0}
 - Would Take Again: ${rmpInfo.wouldTakeAgainPercent || 0}%
-- RateMyProfessor ID: ${rmpInfo.id || "N/A"}
+- RateMyProfessor URL: ${rmpUrl}
 `;
 }
 
 export async function POST(req: NextRequest) {
   try {
     const { userMessage, context } = await req.json();
-    
-    // Extract course code from message
-    const courseCodePattern = /([A-Z]{2,4})\s?-?\s?(\d{2,3})/i;
-    const courseMatch = userMessage.match(courseCodePattern);
-    const requestedCourseCode = courseMatch ? `${courseMatch[1]} ${courseMatch[2]}` : null;
-    console.log("Debug: Requested course code:", requestedCourseCode);
+    console.log("Debug: Received message:", userMessage);
+    console.log("Debug: Current context:", context);
 
-    // Check if user is asking for more information about the last course
-    const isFollowUp = !requestedCourseCode && context?.lastCourseCode;
-    const courseCode = requestedCourseCode || context?.lastCourseCode;
-    console.log("Debug: Using course code:", courseCode);
+    // Check if this is a follow-up question about a course
+    const isFollowUpQuestion = userMessage.toLowerCase().includes("this course") || 
+                              userMessage.toLowerCase().includes("tell me more") ||
+                              userMessage.toLowerCase().includes("what about it") ||
+                              userMessage.toLowerCase().includes("can you explain") ||
+                              userMessage.toLowerCase().includes("what does it cover");
 
-    if (!courseCode) {
-      console.log("Debug: No course code found");
-      return NextResponse.json({
-        reply: "I need a course code to look up information. Please specify a course (e.g., 'CMPE 131').",
-        context: {}
-      });
+    // Extract course code from the message or use context
+    let courseCode = "";
+    if (isFollowUpQuestion && context?.lastCourseCode) {
+      courseCode = context.lastCourseCode;
+      console.log("Debug: Using course code from context for follow-up:", courseCode);
+    } else {
+      const courseCodeMatch = userMessage.match(/([A-Za-z]+\s*\d+)/);
+      if (courseCodeMatch) {
+        courseCode = courseCodeMatch[0];
+      } else if (context?.lastCourseCode) {
+        courseCode = context.lastCourseCode;
+        console.log("Debug: Using course code from context:", courseCode);
+      } else {
+        return NextResponse.json({
+          reply: "I need a course code to look up information. Please specify a course (e.g., 'CMPE 131').",
+          context: {}
+        });
+      }
     }
 
     // Find matching sections
+    console.log("Debug: Looking for course:", courseCode);
+    console.log("Debug: Total sections:", sectionsData.length);
+    
+    // Normalize the course code by removing extra spaces, converting to uppercase, and handling section numbers
+    const normalizedCourseCode = courseCode.replace(/\s+/g, ' ').trim().toUpperCase();
+    
     const matchingSections = sectionsData.filter(
       (section: SectionWithRMP) => {
+        // Extract the course code from the section (e.g., "CMPE 146" from "CMPE 146 (Section 01)")
         const sectionCourseCode = section.section.split("(")[0].trim();
-        return sectionCourseCode === courseCode;
+        const isMatch = sectionCourseCode === normalizedCourseCode;
+        if (isMatch) {
+          console.log("Debug: Found match:", {
+            requested: normalizedCourseCode,
+            section: sectionCourseCode,
+            fullSection: section.section,
+            courseTitle: section.course_title,
+            description: section.description
+          });
+        }
+        return isMatch;
       }
     );
 
-    if (matchingSections.length === 0) {
-      return NextResponse.json({
-        reply: `I couldn't find any information for ${courseCode}. Please check the course code and try again.`,
-        context: {}
+    console.log("Debug: Found matching sections:", matchingSections.length);
+    if (matchingSections.length > 0) {
+      console.log("Debug: First matching section:", {
+        section: matchingSections[0].section,
+        courseTitle: matchingSections[0].course_title,
+        instructor: matchingSections[0].instructor,
+        description: matchingSections[0].description
       });
     }
 
-    // Get RMP info for the instructor
-    const instructorEmail = matchingSections[0].instructor_email || "";
-    const instructorName = matchingSections[0].instructor;
-    const rmpInfo = rmpData[instructorEmail]?.rmp || rmpData[instructorName]?.rmp || {
-      avgRating: 0,
-      avgDifficulty: 0,
-      numRatings: 0,
-      wouldTakeAgainPercent: 0,
-      id: "N/A"
-    };
+    // Try to get the course description from the section or fetch it from the database
+    let courseDescription = matchingSections[0]?.description;
+    if (!courseDescription) {
+      console.log("Debug: No description in section data, fetching from database");
+      try {
+        courseDescription = await fetchCourseDescription(normalizedCourseCode);
+      } catch (error) {
+        console.error("Error fetching course description:", error);
+        courseDescription = "No course description available.";
+      }
+    }
+    
+    if (matchingSections.length > 0) {
+      // Format course details
+      const courseDetails = matchingSections.map(section => `
+Section ${section.section.split("(")[1].replace(")", "")}:
+- Instructor: ${section.instructor}
+- Location: ${section.location}
+- Days: ${section.days}
+- Time: ${section.times}
+- Dates: ${section.dates}
+- Available Seats: ${section.open_seats}
+${section.rmp ? `- RateMyProfessor Rating: ${section.rmp.avgRating}/5 (${section.rmp.numRatings} ratings)` : ''}
+`).join('\n');
 
-    // Format course information for the AI
-    const courseInfo = formatCourseInfo(matchingSections[0], rmpInfo);
+      // Check if the user is asking for a course summary/description
+      const isAskingForSummary = isFollowUpQuestion || 
+                                userMessage.toLowerCase().includes("summary") || 
+                                userMessage.toLowerCase().includes("description") ||
+                                userMessage.toLowerCase().includes("what is") ||
+                                userMessage.toLowerCase().includes("about") ||
+                                userMessage.toLowerCase().includes("teach") ||
+                                userMessage.toLowerCase().includes("learn") ||
+                                userMessage.toLowerCase().includes("tell me about");
 
-    // Create a prompt for the AI
-    const prompt = `You are a helpful assistant providing information about SJSU courses. Here is the information for ${courseCode}:
+      if (isAskingForSummary) {
+        // Create a prompt for ChatGPT to explain the course
+        const prompt = `You are a helpful assistant providing information about SJSU courses. Here is information about ${normalizedCourseCode}:
 
-${courseInfo}
+Course Title: ${matchingSections[0].course_title}
+${courseDescription !== "No course description available." ? `Course Description: ${courseDescription}` : ""}
 
-User's question: ${userMessage}
+Based on the course title "${matchingSections[0].course_title}", please provide a detailed explanation of what this course covers. Focus on:
+1. What students will learn in this course
+2. What skills they will develop
+3. How this course fits into their academic journey
+4. Any important prerequisites or requirements
 
-Please provide a helpful and informative response based on the course information above. If the user's question is about something not covered in the information, please say so.`;
+If no official description is provided, use your knowledge of computer engineering courses to provide an accurate explanation based on the course title. Make it clear when you are inferring information from the course title rather than using an official description.`;
 
-    // Get response from OpenAI
-    const completion = await openai.chat.completions.create({
-      messages: [
-        {
-          role: "system",
-          content: "You are a helpful assistant providing information about SJSU courses. Use the provided course information to answer questions accurately and helpfully."
-        },
-        {
-          role: "user",
-          content: prompt
+        // Get response from OpenAI
+        const completion = await openai.chat.completions.create({
+          messages: [
+            {
+              role: "system",
+              content: `You are a helpful assistant providing information about SJSU courses. Your role is to explain courses in a student-friendly way while maintaining accuracy. You have expertise in computer engineering and can provide accurate information about CMPE courses even when the official description is not available.`
+            },
+            {
+              role: "user",
+              content: prompt
+            }
+          ],
+          model: "gpt-3.5-turbo",
+          temperature: 0.7,
+          max_tokens: 500
+        });
+
+        // For follow-up questions, only return the summary
+        if (isFollowUpQuestion) {
+          return NextResponse.json({
+            reply: completion.choices[0].message.content,
+            context: {
+              lastCourseCode: normalizedCourseCode,
+              lastCourseTitle: matchingSections[0].course_title
+            }
+          });
         }
-      ],
-      model: "gpt-3.5-turbo",
-      temperature: 0.7,
-      max_tokens: 500
-    });
 
-    const aiResponse = completion.choices[0].message.content;
+        // For initial course queries, show both details and summary
+        return NextResponse.json({
+          reply: `Here are the available sections for ${normalizedCourseCode}:\n\n${courseDetails}\n\nCourse Summary:\n${completion.choices[0].message.content}`,
+          context: {
+            lastCourseCode: normalizedCourseCode,
+            lastCourseTitle: matchingSections[0].course_title
+          }
+        });
+      } else {
+        // Just show the course details
+        return NextResponse.json({
+          reply: `Here are the available sections for ${normalizedCourseCode}:\n\n${courseDetails}\n\nIf you'd like to know more about what this course covers, you can ask for a course summary or description.`,
+          context: {
+            lastCourseCode: normalizedCourseCode,
+            lastCourseTitle: matchingSections[0].course_title
+          }
+        });
+      }
+    }
 
-    // Update context
-    const chatContext = {
-      lastCourseCode: courseCode,
-      lastCourseTitle: matchingSections[0].course_title,
-      lastSection: matchingSections[0].section,
-      lastInstructor: matchingSections[0].instructor,
-      lastInstructorEmail: matchingSections[0].instructor_email
-    };
-
+    // If no sections are found, provide a more helpful response
     return NextResponse.json({
-      reply: aiResponse,
-      context: chatContext
+      reply: `I couldn't find any information for ${normalizedCourseCode}. This could mean:\n1. The course code might be incorrect\n2. The course might not be offered this semester\n3. The course might have a different code\n\nPlease check the course code and try again. You can also try searching for similar courses in the same department.`,
+      context: {}
     });
 
   } catch (error) {
