@@ -51,7 +51,7 @@ const dayStringMapping: {[str: string]: SchoolDays} = {
     "S": "Sat"
 }
 
-function parseDaysString(str: string) {
+export function parseDaysString(str: string) {
     const days: Set<SchoolDays> = new Set();
     for (const d of str) {
         if (dayStringMapping[d]) days.add(dayStringMapping[d]);

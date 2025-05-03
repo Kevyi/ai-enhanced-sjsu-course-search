@@ -21,6 +21,7 @@ import { FaStar } from "react-icons/fa";
 import CourseModal from "@/components/courseComponents/CourseModal";
 import { useState } from "react";
 import { SectionWithRMP } from "@/lib/sjsu/types";
+import { parseDaysString } from "@/lib/sjsu/time";
 
 
 const TiltCardDisplay = ({section, inShoppingCart = false} : {section: SectionWithRMP, inShoppingCart : boolean}) => {
@@ -98,8 +99,9 @@ const TiltCard = ({section, inShoppingCart}: {section: SectionWithRMP, inShoppin
         <Card className = "bg-gray-zinc transition delay-450 hover:bg-slate-600 hover:cursor-pointer max-w-[265]">
             <CardHeader className = "pb-2">
                 {/* Title should be cut off after some time if too long. */}
-                <CardTitle className = "font-extrabold text-blue-400 text-xl">
-                  <div className = "max-h-20 max-w-50 overflow-y-hidden ">{section.course_title}</div>
+                <CardTitle className = "font-extrabold">
+                  <div className = "text-xl text-blue-400 max-h-20 max-w-50 overflow-y-hidden ">{section.course_title}</div>
+                  <div className = "text-md text-blue-300 max-h-20 max-w-50 overflow-y-hidden ">{section.section}</div>
                 </CardTitle>
                 <CardDescription> 
                     {/* Map out one star for each score */}
@@ -119,16 +121,11 @@ const TiltCard = ({section, inShoppingCart}: {section: SectionWithRMP, inShoppin
                 </CardDescription>
             </CardHeader>
 
-            <CardContent className = "pb-2">
-                <p className = "text-gray-400 overflow-y-auto max-h-16 [scrollbar-width:none]">
-                  This class is whatever, I don't recommend to take this class....
-                  This class is whatever, I don't recommend to take this class....
-                  This class is whatever, I don't recommend to take this class....
-                </p>
-            </CardContent>
-
-            <CardContent>
-                <p className = "text-white">some thing here?</p>
+            <CardContent className = "pb-2 text-white">
+              <p>{[...parseDaysString(section.days)].join(", ")}</p>
+              <p>{section.times}</p>
+              <br/>
+              <p>{section.location}</p>
             </CardContent>
 
             <CardFooter>
