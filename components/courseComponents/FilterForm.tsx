@@ -18,7 +18,7 @@ import { useRouter } from "next/navigation";
 //Query base off useState values, have a limit(timelimit) so it doesn't check after every character change.
 
 //allCourses references a variable that holds all the courses. setCourses is a setter of useState for courses in the CourseTable, change to query.
-export default function TopicFilterForm ({allCourses, setFilteredCourses, semesters, selectedSemester} : {allCourses: SectionWithRMP[], setFilteredCourses : React.Dispatch<React.SetStateAction<SectionWithRMP[]>>, semesters : [string, number][], selectedSemester: {season: string, year: number}}) {
+export default function TopicFilterForm ({allCourses, setFilteredCourses, semesters, selectedSemester, setPaginationIndex} : {allCourses: SectionWithRMP[], setFilteredCourses : React.Dispatch<React.SetStateAction<SectionWithRMP[]>>, semesters : [string, number][], selectedSemester: {season: string, year: number}, setPaginationIndex: (val: number) => void}) {
   const router = useRouter();
   
   //The course search bar value.
@@ -138,6 +138,7 @@ export default function TopicFilterForm ({allCourses, setFilteredCourses, semest
     }
     
     setFilteredCourses(filteredCourses);
+    setPaginationIndex(1);
   }, [allCourses, RMPscore, debouncedInputCourses, sortBy, selectedTimes, courseTypeSelected, modeTypeSelected, availableCourses]);
 
   useEffect(() => {

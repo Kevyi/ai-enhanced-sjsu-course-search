@@ -22,7 +22,7 @@ export default function CourseTable({sections, semesters, selectedSemester} : {s
 
         <div className = "border border-borderLines bg-gradient-to-b from-slate-900 to-main3 flex-col max-w-5xl min-w-xl">
 
-            <FilterForm allCourses = {sections} setFilteredCourses = {setFilteredCourses} semesters = {semesters} selectedSemester={selectedSemester}></FilterForm>
+            <FilterForm allCourses = {sections} setFilteredCourses = {setFilteredCourses} semesters = {semesters} selectedSemester={selectedSemester} setPaginationIndex={setPaginationIndex}/>
 
             <div className = "flex flex-row min-h-screen flex-wrap justify-center p-10 pt-5">
                 {filteredCourses.slice(coursesPerPage * (paginationIndex -1), coursesPerPage * paginationIndex).map((item) => (
