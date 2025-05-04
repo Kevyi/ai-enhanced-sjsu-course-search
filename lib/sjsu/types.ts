@@ -17,8 +17,6 @@ export type Section = {
   dates: string;
   open_seats: string;
   notes: string;
-  term: string;
-  year: number;
 };
 
 export interface RMPInfo {

@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { MessageSquare, X, Trash2 } from "lucide-react";
-import { SectionWithRMP } from "@/lib/sjsu/types";
+import { Season } from "@/lib/sjsu/types";
 
 interface Message {
   sender: "user" | "assistant" | "typing";
@@ -16,10 +16,13 @@ interface ContextState {
 }
 
 interface AiChatBoxProps {
-  sections: SectionWithRMP[];
+  selectedSemester: {
+    season: Season;
+    year: number;
+  }
 }
 
-export default function AiChatBox({ sections }: AiChatBoxProps) {
+export default function AiChatBox({ selectedSemester }: AiChatBoxProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>(() => {
     if (typeof window !== "undefined") {
@@ -66,13 +69,6 @@ export default function AiChatBox({ sections }: AiChatBoxProps) {
     sessionStorage.setItem("chatContext", JSON.stringify(context));
   }, [context]);
 
-  useEffect(() => {
-    console.log("AiChatBox received sections:", sections);
-    if (sections && sections.length > 0) {
-      console.log("Sample section data:", sections[0]);
-    }
-  }, [sections]);
-
   const clearChat = () => {
     setMessages([]);
     setContext({});
@@ -101,7 +97,8 @@ export default function AiChatBox({ sections }: AiChatBoxProps) {
         body: JSON.stringify({
           userMessage: trimmed,
           context,
-          sections,
+          season: selectedSemester.season,
+          year: selectedSemester.year 
         }),
       });
 

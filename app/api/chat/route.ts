@@ -1,141 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { OpenAI } from "openai";
-import { readFileSync } from "fs";
-import path from "path";
-import { SectionWithRMP } from "@/lib/sjsu/types";
+import { RMPInfo, Season, SectionWithRMP } from "@/lib/sjsu/types";
 import { getCachedSections } from "@/lib/sjsu/cached";
-import fs from "fs/promises";
-import client from "@/lib/mongodb";
 
 // Setup OpenAI client
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-
-interface ChatContext {
-  lastCourseCode?: string;
-  lastInstructor?: string;
-  lastInstructorEmail?: string;
-  lastCourseTitle?: string;
-  lastSection?: string;
-}
-
-interface ChatRequest {
-  userMessage: string;
-  context?: ChatContext;
-}
-
-interface RMPInfo {
-  avgRating: number;
-  avgDifficulty: number;
-  numRatings: number;
-  wouldTakeAgainPercent: number;
-  id: string;
-  legacyId: string;
-}
-
-interface InstructorData {
-  name: string;
-  rmp: RMPInfo;
-}
-
-// Load RMP and Section JSON files
-const rmpDataPath = path.join(process.cwd(), "data", "rmp.json");
-let rmpData: Record<string, InstructorData> = {};
-try {
-  const rawRmpData = await fs.readFile(rmpDataPath, "utf-8");
-  rmpData = JSON.parse(rawRmpData);
-  console.log("Debug: Loaded RMP data for", Object.keys(rmpData).length, "instructors");
-  console.log("Debug: RMP data sample:", JSON.stringify(Object.entries(rmpData)[0], null, 2));
-} catch (error) {
-  console.error("Debug: Error loading RMP data:", error);
-  // Continue with empty RMP data
-}
-
-const sectionsDataPath = path.resolve(process.cwd(), "data", "sections.json");
-let sectionsData: SectionWithRMP[] = [];
-try {
-  const raw = JSON.parse(readFileSync(sectionsDataPath, "utf-8"));
-  
-  // Handle different possible data structures
-  if (Array.isArray(raw)) {
-    sectionsData = raw;
-  } else if (typeof raw === 'object') {
-    // If it's an object, try to extract the sections
-    if (raw.sections) {
-      sectionsData = Array.isArray(raw.sections) ? raw.sections : Object.values(raw.sections);
-    } else {
-      sectionsData = Object.values(raw);
-    }
-  }
-  
-  // Filter out invalid sections
-  sectionsData = sectionsData.filter(sec => {
-    if (!sec || typeof sec !== 'object') return false;
-    if (!sec.section || !sec.course_title) {
-      console.log("Invalid section found:", sec);
-      return false;
-    }
-    return true;
-  });
-  
-  console.log("Debug: Loaded sections data:", sectionsData.length, "sections");
-  console.log("Debug: Sections data sample:", JSON.stringify(sectionsData[0], null, 2));
-  
-  // Check for CMPE courses
-  const cmpeSections = sectionsData.filter(sec => 
-    sec.section.toLowerCase().includes("cmpe")
-  );
-  console.log("Debug: Found CMPE sections:", cmpeSections.length);
-  console.log("Debug: Sample CMPE sections:", cmpeSections.slice(0, 3).map(sec => ({
-    section: sec.section,
-    course_title: sec.course_title
-  })));
-
-  // Verify we have the expected courses
-  const testCourses = ["CMPE 131", "CMPE 133", "CMPE 146"];
-  testCourses.forEach(course => {
-    const found = sectionsData.some(sec => 
-      sec.section.toLowerCase().includes(course.toLowerCase())
-    );
-    console.log(`Course ${course} found:`, found);
-  });
-  
-} catch (err) {
-  console.error("Error reading sections.json:", err);
-  throw new Error("Failed to load course data");
-}
-
-// In-memory cache for instructor ratings
-const ratingCache: Record<string, RMPInfo | null> = {};
-
-async function fetchInstructorRating(name: string): Promise<string> {
-  if (!name || name === "TBA") return "N/A";
-
-  if (ratingCache[name]) {
-    return ratingCache[name]?.avgRating?.toString() || "N/A";
-  }
-
-  const rating = rmpData[name]?.rmp || null;
-  ratingCache[name] = rating;
-  return rating?.avgRating?.toString() || "N/A";
-}
-
-async function fetchCourseDescription(courseCode: string): Promise<string> {
-  try {
-    await client.connect();
-    const db = client.db("cmpe151");
-    const collection = db.collection("course_descriptions");
-    
-    const course = await collection.findOne({ course: courseCode });
-    return course?.description || "No course description available.";
-  } catch (error) {
-    console.error("Error fetching course description:", error);
-    return "Error fetching course description.";
-  } finally {
-    await client.close();
-  }
-}
 
 function analyzeCourseData(course: SectionWithRMP, instructorRating: string) {
   const analysis = {
@@ -221,9 +92,20 @@ Instructor Reviews:
 
 export async function POST(req: NextRequest) {
   try {
-    const { userMessage, context } = await req.json();
+    const { userMessage, context, season, year }: { 
+      userMessage: string, 
+      context: {
+        lastCourseCode: string,
+        lastInstructor: string,
+        lastInstructorEmail: string,
+      },
+      season: Season,
+      year: number
+    } = await req.json();
     console.log("Debug: Received message:", userMessage);
     console.log("Debug: Current context:", context);
+
+    const sectionsData = await getCachedSections(season, year);
 
     // Check if this is a follow-up question about a course
     const isFollowUpQuestion = userMessage.toLowerCase().includes("this course") || 
@@ -290,13 +172,8 @@ export async function POST(req: NextRequest) {
     // Try to get the course description from the section or fetch it from the database
     let courseDescription = matchingSections[0]?.description;
     if (!courseDescription) {
-      console.log("Debug: No description in section data, fetching from database");
-      try {
-        courseDescription = await fetchCourseDescription(normalizedCourseCode);
-      } catch (error) {
-        console.error("Error fetching course description:", error);
-        courseDescription = "No course description available.";
-      }
+      console.log("Debug: No description in section data");
+      courseDescription = "No course description available.";
     }
     
     if (matchingSections.length > 0) {
