@@ -89,9 +89,9 @@ export default function HomePage({courses} : {courses: SectionWithRMP[]}){
             <div className = {`min-w-[60%] border-l-2 border-t border-blue flex ml-[10%] mr-auto mb-4 transition-all duration-2500 ease-out ${transitionCSS3}`}>
                 
                 {/* Include image here of arrow */}
-                <button className ="place-self-center p-4 pl-8 pr-8 min-w-fit ml-[5%] items-center justify-center bg-slate-600 rounded-full transition duration-500 ease-in-out hover:bg-sky-900">
+                <a className="place-self-center p-4 pl-8 pr-8 min-w-fit ml-[5%] items-center justify-center bg-slate-600 rounded-full transition duration-500 ease-in-out hover:bg-sky-900" href="/courseTest">
                     <span className = "text-xl text-yellow-500 font-bold">Get started</span>
-                </button>   
+                </a>
                 
                 <div className = "min-w-full p-5 flex text-white max-lg:font-medium max-sm:px-4 sm:text-1xl lg:text-2xl xl:text-3xl">
                     <span className = "m-auto">Search:</span> 
