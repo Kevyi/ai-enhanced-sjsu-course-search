@@ -5,6 +5,7 @@ import tempImage from "@/app/sjsu image.png"
 import { useEffect, useState } from "react";
 import ShoppingCartSideBar from "@/components/shoppingCartSideBar"
 import { SectionWithRMP } from "@/lib/sjsu/types";
+import Link from 'next/link';
 
 export default function Navbar({ scroll = false, courses } : {scroll : boolean, courses : SectionWithRMP[]}){
 
@@ -50,21 +51,21 @@ const buttonStyling = "bg-green-500 text-white inline-flex items-center justify-
 
                 {/*This is where the Logo and webpage name goes.*/}
                 <div className = "mr-4 hidden md:flex">
-                  <a href = "/home" className = "mr-4 flex items-center gap-2 lg:mr-6">
+                  <Link href = "/home" className = "mr-4 flex items-center gap-2 lg:mr-6">
                     {/*Click logo or name to go to home.*/}
                     <Image src={tempImage} className = "mr-5"alt="Temp" width={30} height={30} />
     
                     <span className = "hidden font-bold lg:inline-block text-2xl text-white"> SJSU Searchify</span>
 
-                  </a>
+                  </Link>
                   
                   {/*Lists a bunch of navigation*/}
                   <nav className = "flex items-center gap-4 text-sm xl:gap-6">
-                    <a className = "transition-colors hover:text-foreground/80 text-foreground/80" href = "/courseTest">
+                    <Link className = "transition-colors hover:text-foreground/80 text-foreground/80" href = "/courseTest">
                         <span className = "font-semibold text-yellow-500">
                           Course Search
                         </span>
-                    </a>
+                    </Link>
                   </nav>
                 </div>
 
