@@ -60,21 +60,9 @@ const buttonStyling = "bg-green-500 text-white inline-flex items-center justify-
                   
                   {/*Lists a bunch of navigation*/}
                   <nav className = "flex items-center gap-4 text-sm xl:gap-6">
-                    <a className = "transition-colors hover:text-foreground/80 text-foreground/80" href = "somewhere">
+                    <a className = "transition-colors hover:text-foreground/80 text-foreground/80" href = "/courseTest">
                         <span className = "font-semibold text-yellow-500">
-                          Nav 1
-                        </span>
-                    </a>
-
-                    <a className = "transition-colors hover:text-foreground/80 text-foreground/80" href = "somewhere">
-                        <span className = "font-semibold text-yellow-500">
-                          Nav 2
-                        </span>
-                    </a>
-
-                    <a className = "transition-colors hover:text-foreground/80 text-foreground/80" href = "somewhere">
-                        <span className = "font-semibold text-yellow-500">
-                          Nav 3
+                          Course Search
                         </span>
                     </a>
                   </nav>
