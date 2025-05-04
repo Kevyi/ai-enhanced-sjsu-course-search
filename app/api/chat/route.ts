@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { OpenAI } from "openai";
 import { RMPInfo, Season, SectionWithRMP } from "@/lib/sjsu/types";
 import { getCachedSections } from "@/lib/sjsu/cached";
+import { getTeacherRatings } from "@/lib/rmp";
 
 // Setup OpenAI client
 const openai = new OpenAI({
@@ -197,7 +198,8 @@ ${section.rmp ? `- RateMyProfessor Rating: ${section.rmp.avgRating}/5 (${section
                                 userMessage.toLowerCase().includes("about") ||
                                 userMessage.toLowerCase().includes("teach") ||
                                 userMessage.toLowerCase().includes("learn") ||
-                                userMessage.toLowerCase().includes("tell me about");
+                                userMessage.toLowerCase().includes("tell me about") ||
+                                userMessage.toLowerCase().includes("how is");
 
       if (isAskingForSummary) {
         // Create a prompt for ChatGPT to explain the course
@@ -206,7 +208,13 @@ ${section.rmp ? `- RateMyProfessor Rating: ${section.rmp.avgRating}/5 (${section
 Course Title: ${matchingSections[0].course_title}
 ${courseDescription !== "No course description available." ? `Course Description: ${courseDescription}` : ""}
 
-Based on the course title "${matchingSections[0].course_title}", please provide a detailed explanation of what this course covers. Focus on:
+Instructors: ${[...new Set(matchingSections.map(s => s.instructor).filter(i => i !== "Staff" && i !== "TBA"))].join(", ")}
+
+The user message is: ${userMessage}.
+
+If the user message mentions an instructor, respond with ONLY the following text: "Instructor: " followed by the instructor's name. DO NOT RESPOND WITH ANYTHING ELSE.
+
+If the user message did not mention an instructor, then based on the course title "${matchingSections[0].course_title}", please provide a detailed explanation of what this course covers. Focus on:
 1. What students will learn in this course
 2. What skills they will develop
 3. How this course fits into their academic journey
@@ -231,10 +239,50 @@ If no official description is provided, use your knowledge of computer engineeri
           max_tokens: 500
         });
 
+        const response = completion.choices[0].message.content!;
+        if (response.startsWith("Instructor: ")) {
+          const instructor = response.slice(12);
+          const instructorSection = matchingSections.find(s => s.instructor === instructor)!;
+
+          if (!instructorSection.rmp) {
+            return NextResponse.json({
+              reply: "I couldn't find a Rate My Professor page for " + instructor,
+              context: {
+                lastCourseCode: normalizedCourseCode,
+                lastCourseTitle: matchingSections[0].course_title
+              }
+            })
+          }
+
+          const reviews = await getTeacherRatings(instructorSection.rmp.id);
+          const rmpCompletion = await openai.chat.completions.create({
+            messages: [
+              {
+                role: "system",
+                content: `You are a helpful assistant providing summaries for Rate My Professor reviews. Your role is to provide a short summary of the reviews given in the prompt.`
+              },
+              {
+                role: "user",
+                content: reviews.node.ratings.edges.map(e => e.node.comment).join(", ")
+              }
+            ],
+            model: "gpt-3.5-turbo",
+            temperature: 0.7,
+            max_tokens: 500
+          });
+          return NextResponse.json({
+            reply: `Here's a summary of ${instructor}'s Rate My Professor reviews:\n\n` + rmpCompletion.choices[0].message.content,
+            context: {
+              lastCourseCode: normalizedCourseCode,
+              lastCourseTitle: matchingSections[0].course_title
+            }
+          })
+        }
+
         // For follow-up questions, only return the summary
         if (isFollowUpQuestion) {
           return NextResponse.json({
-            reply: completion.choices[0].message.content,
+            reply: response,
             context: {
               lastCourseCode: normalizedCourseCode,
               lastCourseTitle: matchingSections[0].course_title
@@ -244,7 +292,7 @@ If no official description is provided, use your knowledge of computer engineeri
 
         // For initial course queries, show both details and summary
         return NextResponse.json({
-          reply: `Here are the available sections for ${normalizedCourseCode}:\n\n${courseDetails}\n\nCourse Summary:\n${completion.choices[0].message.content}`,
+          reply: `Here are the available sections for ${normalizedCourseCode}:\n\n${courseDetails}\n\nCourse Summary:\n${response}`,
           context: {
             lastCourseCode: normalizedCourseCode,
             lastCourseTitle: matchingSections[0].course_title
