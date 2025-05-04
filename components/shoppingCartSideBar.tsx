@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/sheet"
 import { SectionWithRMP } from "@/lib/sjsu/types";
 import localStorageCourseWatcher from "@/components/localStorageCourseWatcher"
+import { ShoppingCart } from "lucide-react";
 
 export default function ShoppingCartSideBar({courses} : {courses : SectionWithRMP[]}) {
 
@@ -58,7 +59,7 @@ export default function ShoppingCartSideBar({courses} : {courses : SectionWithRM
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline" className = "bg-slate-700 hover:bg-slate-600 border-none">Cart. Put icon here.</Button>
+        <ShoppingCart className="cursor-pointer" stroke="white" />
       </SheetTrigger>
       <SheetContent className = "bg-slate-900 border-gray-800 h-screen">
         <SheetHeader>
