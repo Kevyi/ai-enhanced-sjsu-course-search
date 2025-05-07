@@ -14,7 +14,7 @@ export default function CourseReviews({ rmpId }: { rmpId: string }) {
     return isLoading ? <div>Loading...</div> : error ? <div>An error occurred.</div> : <div className="flex flex-col gap-2">
         {data?.node.ratings.edges.map(e => {
             const reviewColor = `${e.node.clarityRating > 3.5 ? 'bg-green-500' : e.node.clarityRating > 2.5 ? 'bg-amber-500': 'bg-red-600'}`;
-            return <div key={e.cursor} className= {`rounded-md p-5 text-black bg-gray-200 ${reviewColor}`}>
+            return <div key={e.cursor} className= {`rounded-md p-5 text-black ${reviewColor}`}>
                 <div className="flex justify-between">
                     <div className="flex gap-2 items-center">
                         <span className="font-bold text-xl">{e.node.class}</span>
