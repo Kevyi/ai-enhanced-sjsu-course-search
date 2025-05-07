@@ -160,9 +160,7 @@ export default function HomePage({courses} : {courses: SectionWithRMP[]}){
                     {/*Show before of why original SJSU thing sucks.*/} 
                     <div className = "text-xl mt-0 max-w-xl pt-1 ....border border-blue-500 rounded-lg">
                         <p className = "pl-5 p-2 border-l text-white">
-                            This is so good because of random stuff and etc.
-                            This is so good because of random stuff and etc.
-                            This is so good because of random stuff and etc.
+                            Better searching, better interface, better support.
                         </p>
                     </div>
                     
@@ -184,9 +182,8 @@ export default function HomePage({courses} : {courses: SectionWithRMP[]}){
                             {/*Show before of why original SJSU thing sucks.*/} 
                             <div className = "max-w-4xl p-5 ....border border-blue-500 rounded-lg">
                                 <p className = "text-white">
-                                    Write something on how interface is much better and sleeker.
-                                    Okay, it’s not exactly cutting edge, but just throw a screen size in front of 
-                                    literally any utility to apply it at a specific breakpoint.dsadsadsadsadsadas
+                                    Expanded with modern UI design that follows other well-known websites. 
+                                    Easy to use, easy to understand, and easier for students to succeed.
                                 </p> 
                             </div>
                         </div>
@@ -204,9 +201,8 @@ export default function HomePage({courses} : {courses: SectionWithRMP[]}){
                     
                     <div className = "place-self-end pt-4 text-xl mt-0 max-w-xl ....border border-blue-500 rounded-lg">
                         <p className = "text-white">
-                            This is so good because of random stuff and etc.
-                            This is so good because of random stuff and etc.
-                            This is so good because of random stuff and etc.
+                            More search functionality integraded with Rate My Professor. Find the best professor amongst the worst. Always find
+                            an open class just for you. 
                         </p>
                     </div>
                 </div>
