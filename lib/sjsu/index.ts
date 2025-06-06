@@ -84,8 +84,10 @@ export async function getAvailableSemesters() {
 
     for (const link of links) {
         const url = (link as HTMLAnchorElement).href;
-        const segments = url.split("/");
 
+        if (url.includes("/archive/")) continue;
+
+        const segments = url.split("/");
         const lastSegment = segments[segments.length - 1];
         if (!lastSegment.endsWith(".php")) continue;
 
